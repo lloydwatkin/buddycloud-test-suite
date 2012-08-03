@@ -29,14 +29,17 @@
     <target name="test" depends="compile-test">
         <junit>
             <classpath refid="classpath.test" />
+        	<classpath>
+        	    <pathelement location="lib/junit-4.10.jar"/>
+        	</classpath>
             <formatter type="brief" usefile="false" />
             <batchtest>
-                <fileset dir="${test-directory}" includes="**/Test*.class" />
+                <fileset dir="${test-directory}" includes="**/*Test.class" />
             </batchtest>
         </junit>
     </target>
 
-    <target name="all" depends="test" />
+	<target name="all" depends="test" />
 
     <target name="clean" depends="clean-compile-test" />
 
