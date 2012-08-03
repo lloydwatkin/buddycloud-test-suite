@@ -35,6 +35,9 @@
             <formatter type="brief" usefile="false" />
             <batchtest>
                 <fileset dir="${test-directory}" includes="**/*Test.class" />
+            	<exclude dir="${test-directory}" name="**/TestContext.class" />
+            	<exclude dir="${test-directory}" name="**/TestIQPacket.class" />
+            	<exclude dir="${test-directory}" name="**/TestPacket.class" />
             </batchtest>
         </junit>
     </target>
