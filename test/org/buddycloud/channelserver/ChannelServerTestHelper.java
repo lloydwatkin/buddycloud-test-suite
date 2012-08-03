@@ -24,7 +24,7 @@ import org.junit.Before;
  * @author Abmar
  *
  */
-public class ChannelServerTest extends XMPPAcceptanceTest {
+public class ChannelServerTestHelper extends XMPPAcceptanceTestHelper {
 
 	private static final String PROPERTIES_FILE = "suite.properties";
 	

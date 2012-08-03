@@ -17,7 +17,7 @@ package org.buddycloud.channelserver.discovery;
 
 import junit.framework.Assert;
 
-import org.buddycloud.channelserver.ChannelServerTest;
+import org.buddycloud.channelserver.ChannelServerTestHelper;
 import org.jivesoftware.smack.packet.Packet;
 import org.junit.Test;
 
@@ -25,7 +25,7 @@ import org.junit.Test;
  * @author Abmar
  *
  */
-public class DiscoveryTest extends ChannelServerTest {
+public class DiscoveryTest extends ChannelServerTestHelper {
 
 	@Test
 	public void testDiscoveryInfo() throws Exception {
