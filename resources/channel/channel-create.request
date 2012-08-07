@@ -1,0 +1,27 @@
+<iq from='$USER_JID' to='$CHANNEL_SERVER' id='$ID' type='set' id='7600:pubsubcreatenode' xmlns='jabber:client'>
+    <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+        <create node='/user/little_star@topics.ip-10-66-2-93/posts'/>
+        <configure>
+            <x xmlns='jabber:x:data' type='submit'>
+                <field var='FORM_TYPE' type='hidden'>
+                    <value>http://jabber.org/protocol/pubsub#node_config</value>
+                </field>
+                <field var='pubsub#title'>
+                    <value>little star</value>
+                </field>
+                <field var='pubsub#description'>
+                    <value>how I wonder what you are</value>
+                </field>
+                <field var='pubsub#access_model'>
+                    <value>open</value>
+                </field>
+                <field var='pubsub#publish_model'>
+                    <value>publishers</value>
+                </field>
+                <field var='buddycloud#default_affiliation'>
+                    <value>publisher</value>
+                </field>
+            </x>
+        </configure>
+    </pubsub>
+</iq>

@@ -37,6 +37,8 @@ public class ChannelServerTestHelper extends XMPPAcceptanceTestHelper {
 		TestContext tc = new TestContext();
 		
 		tc.setTo(configuration.getProperty("channelserver_to_test"));
+		tc.setTopicChannelServer(configuration.getProperty("topic_channel_server"));
+
 		tc.setClientUser(configuration.getProperty("testclient_user"));
 		tc.setClientPass(configuration.getProperty("testclient_pass"));
 		

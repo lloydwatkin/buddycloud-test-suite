@@ -33,6 +33,7 @@ public class TestContext {
 	private String serviceName;
 
 	private String to;
+	private String topicChannelServer;
 
 	/**
 	 * @return the clientUser
@@ -100,6 +101,20 @@ public class TestContext {
 	public String getTo() {
 		return to;
 	}
+	
+	/**
+	 * Get topic channel server
+	 */
+	public String getTopicChannelServer() {
+		return this.topicChannelServer;
+	}
+	
+	/**
+	 * Set topicChannelServer domain
+	 */
+	public void setTopicChannelServer(String topicChannelServer) {
+		this.topicChannelServer = topicChannelServer;
+	}
 
 	/**
 	 * @param to
@@ -129,6 +144,7 @@ public class TestContext {
 		properties.put("$USER_RESOURCE", clientResource);
 		properties.put("$USER_NAME", clientUser);
 		properties.put("$CHANNEL_SERVER", to);
+		properties.put("$TOPIC_CHANNEL", topicChannelServer);
 		
 		return properties;
 	}
