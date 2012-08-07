@@ -52,7 +52,7 @@ public class XMPPAcceptanceTestHelper {
 	 */
 	protected void initConnection() throws XMPPException {
 		ConnectionConfiguration cc = new ConnectionConfiguration(
-				tc.getServerHostname(), tc.getServerPort(), tc.getServiceName());
+				tc.getServerHostname(), tc.getServerPort());
 		
 		this.xmppConnection = new XMPPConnection(cc);
 		xmppConnection.connect();

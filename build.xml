@@ -4,12 +4,11 @@
     <property name="library-directory" value="./lib" />
 
     <path id="classpath.base">
-        <pathelement location="./lib" />
         <fileset dir="${library-directory}" includes="**/*.jar"/>
     </path>
 
     <path id="classpath.test">
-        <pathelement location="./lib/" />
+        <pathelement location="${library-directory}" />
         <pathelement location="${test-directory}" />
         <path refid="classpath.base" />
     </path>
