@@ -32,7 +32,7 @@ public class ChannelCreateTest extends ChannelServerTestHelper {
 		
 		Packet packet = getPacket("resources/channel/channel-create.request");
 		Packet reply = sendPacket(packet);
-		System.out.println('---  create channel ---');
+		System.out.println("---  create channel ---");
 		System.out.println(packet);
         System.out.println(reply);
 		Assert.assertEquals(packet.getPacketID(), getValue(reply, "/iq/@id"));
