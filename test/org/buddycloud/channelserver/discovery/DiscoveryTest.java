@@ -20,6 +20,7 @@ import junit.framework.Assert;
 import org.buddycloud.channelserver.ChannelServerTestHelper;
 import org.jivesoftware.smack.packet.Packet;
 import org.junit.Test;
+import org.junit.Ignore;
 
 /**
  * @author Abmar
