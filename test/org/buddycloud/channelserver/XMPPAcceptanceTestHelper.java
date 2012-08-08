@@ -61,6 +61,7 @@ public class XMPPAcceptanceTestHelper {
 		xmppConnection.addPacketListener(new PacketListener() {
 			@Override
 			public void processPacket(Packet packet) {
+				System.out.println("    --- Receiving packet...");
 				System.out.println(packet.toXML());
 			}
 		}, new PacketFilter() {
@@ -72,6 +73,7 @@ public class XMPPAcceptanceTestHelper {
 	    xmppConnection.addPacketSendingListener(new PacketListener() {
 			@Override
 			public void processPacket(Packet packet) {
+				System.out.println("    --- Sending packet...");
 				System.out.println(packet.toXML());
 			}
 		}, new PacketFilter() {
