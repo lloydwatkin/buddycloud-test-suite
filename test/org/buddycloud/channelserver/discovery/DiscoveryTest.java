@@ -38,6 +38,7 @@ public class DiscoveryTest extends ChannelServerTestHelper {
 	}
 	
 	@Test
+	@Ignore("Doesn't seem to be ready yet")
 	public void testDiscoveryItems() throws Exception {
 		
 		Packet packet = getPacket("resources/discovery/discovery-item.request");
