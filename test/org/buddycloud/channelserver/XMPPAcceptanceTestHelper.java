@@ -28,6 +28,7 @@ import org.jdom2.JDOMException;
 import org.jdom2.Text;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.xpath.XPathFactory;
+import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -54,7 +55,8 @@ public class XMPPAcceptanceTestHelper {
 		ConnectionConfiguration cc = new ConnectionConfiguration(
 				tc.getServerHostname(), tc.getServerPort());
 		
-		this.xmppConnection = new XMPPConnection(cc);
+		Connection.DEBUG_ENABLED = true;
+		this.xmppConnection      = new XMPPConnection(cc);
 		xmppConnection.connect();
 		xmppConnection.login(tc.getClientUser(), tc.getClientPass(), tc.getClientResource());
 		
@@ -90,7 +92,7 @@ public class XMPPAcceptanceTestHelper {
 	
 	private TestPacket preparePacket(String packetXml) {
 		
-		packetXml = packetXml.replaceAll("\n", "");
+		packetXml = packetXml.replaceAll(".*>(.*)<.*", "");
 		TestPacket p = new TestPacket(packetXml);
 		
 		String id = Packet.nextID();
