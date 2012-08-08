@@ -8,7 +8,6 @@
                         <name>$USER_NAME@$USER_SERVICENAME</name>
                     </author>
                     <updated>2012-08-08T14:00:30.740Z</updated>
-                    <!--<thr:in-reply-to ref='ae6d3c70-0d90-4d90-a120-54fd507ac9a9'/>-->
                 </entry>
             </item>
         </publish>
