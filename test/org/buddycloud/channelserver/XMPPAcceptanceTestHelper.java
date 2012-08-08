@@ -69,6 +69,17 @@ public class XMPPAcceptanceTestHelper {
 				return packet instanceof IQ;
 			}
 		});
+	    xmppConnection.addPacketSendingListener(new PacketListener() {
+			@Override
+			public void processPacket(Packet packet) {
+				System.out.println(packet.toXML());
+			}
+		}, new PacketFilter() {
+			@Override
+			public boolean accept(Packet packet) {
+				return packet instanceof IQ;
+			}
+		});
 	}
 
 	public void setContext(TestContext tc) {

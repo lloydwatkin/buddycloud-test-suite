@@ -1,4 +1,4 @@
-<iq from='$USER_JID' to='$CHANNEL_SERVER' id='$ID' type='set' id='7600:pubsubcreatenode' xmlns='jabber:client'>
+<iq from='$USER_JID' to='$CHANNEL_SERVER' id='$ID' type='set' xmlns='jabber:client'>
     <pubsub xmlns='http://jabber.org/protocol/pubsub'>
         <create node='/user/little_star@topics.ip-10-66-2-93/posts'/>
         <configure>

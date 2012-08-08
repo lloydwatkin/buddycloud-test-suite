@@ -28,7 +28,7 @@ import org.junit.Test;
 public class ChannelCreateTest extends ChannelServerTestHelper {
 
 	@Test
-	public void testDiscoveryInfo() throws Exception {
+	public void testCreateChannel() throws Exception {
 		
 		Packet packet = getPacket("resources/channel/channel-create.request");
 		Packet reply = sendPacket(packet);
@@ -37,18 +37,5 @@ public class ChannelCreateTest extends ChannelServerTestHelper {
         System.out.println(reply);
 		Assert.assertEquals(packet.getPacketID(), getValue(reply, "/iq/@id"));
 		Assert.assertTrue(exists(reply, "/iq/query/identity[@type='channels' and @category='pubsub']"));
-	}
-	
-	@Test
-	public void testDiscoveryItems() throws Exception {
-		
-		Packet packet = getPacket("resources/discovery/discovery-item.request");
-		Packet reply = sendPacket(packet);
-		
-		Assert.assertEquals(packet.getPacketID(), getValue(reply, "/iq/@id"));
-		Assert.assertTrue(exists(reply, "/iq/query/item"));
-		Assert.assertTrue(exists(reply, "/iq/query/item[1]/@jid"));
-		Assert.assertTrue(exists(reply, "/iq/query/item[1]/@node"));
-	}
-	
+	}	
 }
