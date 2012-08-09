@@ -91,7 +91,7 @@ public class XMPPAcceptanceTestHelper {
 	
 	private TestPacket preparePacket(String packetXml) {
 		
-		packetXml = packetXml.replaceAll(".*>(.*)<.*", "");
+		packetXml = packetXml.replaceAll(".*>(.*)<[^/].*", "");
 		TestPacket p = new TestPacket(packetXml);
 		
 		String id = Packet.nextID();
