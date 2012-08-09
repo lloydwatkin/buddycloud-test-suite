@@ -21,5 +21,10 @@ public class PostTest
 		Assert.assertEquals(packet.getPacketID(), getValue(reply, "/iq/@id"));
     }
     
-    //                     <!--<thr:in-reply-to ref='ae6d3c70-0d90-4d90-a120-54fd507ac9a9'/>-->
+    @Test
+    public void canPostAReplyTest() throws Exception
+    {
+    	Packet packet = getPacket("resources/channel/node/create-post.request");
+    	
+    }
 }
