@@ -19,7 +19,8 @@ public class PostTest
     {
     	Packet packet = getPacket("resources/channel/node/create-post.request");
 		Packet reply  = sendPacket(packet);
-
+		System.out.println("---------------- received");
+System.out.println(reply);
 		Assert.assertEquals(packet.getPacketID(), getValue(reply, "/iq/@id"));
 		Assert.assertTrue(exists(reply, "/iq/pubsub/publish/item[@id]"));
 		Assert.assertTrue(exists(reply, "/iq/pubsub/publish[@node]"));
