@@ -61,7 +61,6 @@ public class XMPPAcceptanceTestHelper {
 		xmppConnection.addPacketListener(new PacketListener() {
 			@Override
 			public void processPacket(Packet packet) {
-				PacketReceivedQueue.addPacket(packet);
 				System.out.println("    --- Receiving packet ---");
 				System.out.println(packet.toXML());
 			}
@@ -115,8 +114,8 @@ public class XMPPAcceptanceTestHelper {
 	
 	protected Packet sendPacket(Packet p) throws Exception
 	{
-		PacketReceivedQueue.addPacket(SyncPacketSend.getReply(xmppConnection, p));
 		try {
+			SyncPacketSend.getReply(xmppConnection, p);
 		    return PacketReceivedQueue.getPacketWithId(p.getPacketID());
 		} catch (Exception e) {
 			throw new Exception(e.getMessage());
