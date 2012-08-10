@@ -35,9 +35,9 @@ public class PacketReceivedQueue
 	public static void addPacket(Packet packet)
 	{
 	   if (null == packets) {
-		   HashMap<String, Packet> packets = new HashMap<String, Packet>();
+		   HashMap<String, Packet> PacketReceivedQueue.packets = new HashMap<String, Packet>();
 	   }
-	   packets.put(packet.getPacketID(), packet);
+	   PacketReceivedQueue.packets.put(packet.getPacketID(), packet);
 	}
 
 	public static HashMap<String, Packet> getPackets()
@@ -57,7 +57,7 @@ public class PacketReceivedQueue
 		long t   = System.currentTimeMillis();
 		long end = t + timeout;
 		while (System.currentTimeMillis() < end) {
-	        for (Map.Entry<String, Packet> packet : packets.entrySet()) {
+	        for (Map.Entry<String, Packet> packet : PacketReceivedQueue.packets.entrySet()) {
 		        if (packet.getKey() == id) {
 		            return packet.getValue();
 		        }
@@ -69,14 +69,14 @@ public class PacketReceivedQueue
 
 	public static void clearPackets()
 	{
-		for (Map.Entry<String, Packet> packet : packets.entrySet()) {
+		for (Map.Entry<String, Packet> packet : PacketReceivedQueue.packets.entrySet()) {
 	        packets.remove(packet.getKey());
 		}
 	}
 
 	public static void removePacket(String id)
 	{
-		for (Map.Entry<String, Packet> packet : packets.entrySet()) {
+		for (Map.Entry<String, Packet> packet : PacketReceivedQueue.packets.entrySet()) {
 			if (packet.getKey() == id) {
 	            packets.remove(packet.getKey());
 			}
