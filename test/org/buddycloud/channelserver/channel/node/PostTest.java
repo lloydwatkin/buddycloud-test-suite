@@ -19,12 +19,22 @@ public class PostTest
 		Packet reply  = sendPacket(packet);
 
 		Assert.assertEquals(packet.getPacketID(), getValue(reply, "/iq/@id"));
+		Assert.assertTrue(exists(reply, "/iq/pubsub/publish/item[@id]"));
+		Assert.assertTrue(exists(reply, "/iq/pubsub/publish[@node]"));
     }
     
     @Test
     public void canPostAReplyTest() throws Exception
     {
     	Packet packet = getPacket("resources/channel/node/create-post.request");
-    	
+		Packet reply  = sendPacket(packet);
+    	packet.setVariable("$IN_REPLY_TO", getValue(reply, "/iq/pubsub/publish/item[@id]"));
+
+    	Packet packet = getPacket("resources/channel/node/create-post.request");
+    	Packet reply  = sendPacket(packet);
+		Assert.assertEquals(packet.getPacketID(), getValue(reply, "/iq/@id"));
+		Assert.assertTrue(exists(reply, "/iq/pubsub/publish/item[@id]"));
+		Assert.assertTrue(exists(reply, "/iq/pubsub/publish[@node]"));
+    	System.out.println(getValue(reply, "/iq/pubsub/publish/item[@id]"));
     }
 }
