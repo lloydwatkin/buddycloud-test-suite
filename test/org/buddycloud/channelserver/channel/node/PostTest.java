@@ -1,6 +1,8 @@
 package org.buddycloud.channelserver.channel.node;
 
 import org.buddycloud.channelserver.ChannelServerTestHelper;
+import org.buddycloud.channelserver.TestPacket;
+
 import junit.framework.Assert;
 import org.jivesoftware.smack.packet.Packet;
 import org.junit.Test;
@@ -26,12 +28,14 @@ public class PostTest
     @Test
     public void canPostAReplyTest() throws Exception
     {
-    	Packet packet = getPacket("resources/channel/node/create-post.request");
-		Packet reply  = sendPacket(packet);
-    	packet.setVariable("$IN_REPLY_TO", getValue(reply, "/iq/pubsub/publish/item[@id]"));
+    	Packet packet   = getPacket("resources/channel/node/create-post.request");
+		Packet response = sendPacket(packet);
+		String postId   = getValue(response, "/iq/pubsub/publish/item[@id]");
 
-    	Packet packet = getPacket("resources/channel/node/create-post.request");
-    	Packet reply  = sendPacket(packet);
+    	TestPacket followUp = getPacket("resources/channel/node/create-post.request");
+    	followUp.setVariable("$IN_REPLY_TO", postId);
+    	Packet reply = sendPacket(followUp);
+
 		Assert.assertEquals(packet.getPacketID(), getValue(reply, "/iq/@id"));
 		Assert.assertTrue(exists(reply, "/iq/pubsub/publish/item[@id]"));
 		Assert.assertTrue(exists(reply, "/iq/pubsub/publish[@node]"));
