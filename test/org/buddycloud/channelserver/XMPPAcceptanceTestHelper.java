@@ -17,10 +17,9 @@ package org.buddycloud.channelserver;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.security.InvalidParameterException;
 import java.util.Map;
 import java.util.Map.Entry;
-
+import org.buddycloud.channelserver.PacketReceivedQueue;
 import org.apache.commons.io.IOUtils;
 import org.jaxen.JaxenException;
 import org.jdom2.Attribute;
@@ -29,7 +28,6 @@ import org.jdom2.JDOMException;
 import org.jdom2.Text;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.xpath.XPathFactory;
-import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -38,8 +36,6 @@ import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.util.SyncPacketSend;
-
-import com.sun.tools.corba.se.idl.InvalidArgument;
 
 /**
  * @author Abmar
