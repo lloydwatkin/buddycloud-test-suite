@@ -26,18 +26,17 @@ import org.jivesoftware.smack.packet.Packet;
  */
 public class PacketReceivedQueue
 {
-	private static HashMap<String, Packet> packets;
+	private static HashMap<String, Packet> packets = null;
 
-	/**
-	 * Add a received packet
-
-	 */
 	public static void addPacket(Packet packet)
 	{
-	   if (null == packets) {
-		   HashMap<String, Packet> PacketReceivedQueue.packets = new HashMap<String, Packet>();
+	   if (null == PacketReceivedQueue.packets) {
+		   packets = new HashMap<String, Packet>();
+		   System.out.println("Initialising packets");
 	   }
-	   PacketReceivedQueue.packets.put(packet.getPacketID(), packet);
+	   System.out.println("Adding packet: ");
+	   System.out.println(packet.getPacketID());
+	   packets.put(packet.getPacketID(), packet);
 	}
 
 	public static HashMap<String, Packet> getPackets()
@@ -57,7 +56,7 @@ public class PacketReceivedQueue
 		long t   = System.currentTimeMillis();
 		long end = t + timeout;
 		while (System.currentTimeMillis() < end) {
-	        for (Map.Entry<String, Packet> packet : PacketReceivedQueue.packets.entrySet()) {
+	        for (Map.Entry<String, Packet> packet : packets.entrySet()) {
 		        if (packet.getKey() == id) {
 		            return packet.getValue();
 		        }
@@ -69,14 +68,14 @@ public class PacketReceivedQueue
 
 	public static void clearPackets()
 	{
-		for (Map.Entry<String, Packet> packet : PacketReceivedQueue.packets.entrySet()) {
+		for (Map.Entry<String, Packet> packet : packets.entrySet()) {
 	        packets.remove(packet.getKey());
 		}
 	}
 
 	public static void removePacket(String id)
 	{
-		for (Map.Entry<String, Packet> packet : PacketReceivedQueue.packets.entrySet()) {
+		for (Map.Entry<String, Packet> packet : packets.entrySet()) {
 			if (packet.getKey() == id) {
 	            packets.remove(packet.getKey());
 			}
