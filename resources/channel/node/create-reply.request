@@ -3,7 +3,7 @@
         <publish node="/user/$USER_NAME@$USER_SERVICENAME/posts">
             <item>
                 <entry xmlns="http://www.w3.org/2005/Atom" xmlns:thr="http://purl.org/syndication/thread/1.0">
-                    <content>post</content>
+                    <content>this a reply to a message</content>
                     <author>
                         <name>$USER_NAME@$USER_SERVICENAME</name>
                     </author>
