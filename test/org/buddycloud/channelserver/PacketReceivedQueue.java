@@ -30,7 +30,7 @@ public class PacketReceivedQueue
 
 	public static void addPacket(Packet packet)
 	{
-	   if (null == PacketReceivedQueue.packets) {
+	   if (null == packets) {
 		   packets = new HashMap<String, Packet>();
 		   System.out.println("Initialising packets");
 	   }
