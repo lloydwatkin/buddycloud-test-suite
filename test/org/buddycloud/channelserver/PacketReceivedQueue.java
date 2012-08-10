@@ -34,6 +34,9 @@ public class PacketReceivedQueue
 	 */
 	public static void addPacket(Packet packet)
 	{
+	   if (null == packets) {
+		   HashMap<String, Packet> packets = new HashMap<String, Packet>();
+	   }
 	   packets.put(packet.getPacketID(), packet);
 	}
 
