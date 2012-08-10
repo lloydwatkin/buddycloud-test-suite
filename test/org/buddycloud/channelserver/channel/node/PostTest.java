@@ -53,7 +53,7 @@ public class PostTest
     @Test
     public void canPostAReplyTest() throws Exception
     {
-    	Packet packet   = getPacket("resources/channel/node/create-post.request");
+    	Packet packet   = getPacket("resources/channel/node/create-reply.request");
 		Packet response = sendPacket(packet);
 		Assert.assertTrue(exists(response, "/message/event/items[0]/item[@id]"));
 		String postId   = getText(response, "/message/event/items[0]/item/id/text()");

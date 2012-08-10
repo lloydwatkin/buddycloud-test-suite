@@ -17,6 +17,7 @@ package org.buddycloud.channelserver;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.InvalidParameterException;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -37,6 +38,8 @@ import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.util.SyncPacketSend;
+
+import com.sun.tools.corba.se.idl.InvalidArgument;
 
 /**
  * @author Abmar
@@ -62,6 +65,7 @@ public class XMPPAcceptanceTestHelper {
 		xmppConnection.addPacketListener(new PacketListener() {
 			@Override
 			public void processPacket(Packet packet) {
+				PacketReceivedQueue.addPacket((TestPacket) packet);
 				System.out.println("    --- Receiving packet ---");
 				System.out.println(packet.toXML());
 			}
@@ -113,8 +117,14 @@ public class XMPPAcceptanceTestHelper {
 		return preparePacket(requestXml);
 	}
 	
-	protected Packet sendPacket(Packet p) throws XMPPException {
-		return SyncPacketSend.getReply(xmppConnection, p);
+	protected Packet sendPacket(Packet p) throws Exception
+	{
+		SyncPacketSend.getReply(xmppConnection, p);
+		try {
+		    return PacketReceivedQueue.getPacketWithId(p.getPacketID());
+		} catch (Exception e) {
+			throw new Exception(e.getMessage());
+		}
 	}
 	
 	protected String getValue(Packet p, String xPath) throws JDOMException,
