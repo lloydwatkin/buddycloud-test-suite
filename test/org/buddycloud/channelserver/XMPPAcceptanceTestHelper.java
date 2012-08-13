@@ -92,7 +92,9 @@ public class XMPPAcceptanceTestHelper {
 		
 		packetXml = packetXml.replaceAll(".*>(.*)<[^/].*", "")
 				.replaceAll("/^.*>([^>]*)$/m", "")
-				.replaceAll("/^([^<]*)<.*$/m", "");
+				.replaceAll("/^([^<]*)<.*$/m", "")
+				.replaceAll("\n", "")
+				.replaceAll("\r", "");
 		TestPacket p = new TestPacket(packetXml);
 		
 		String id = Packet.nextID();
