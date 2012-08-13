@@ -90,7 +90,9 @@ public class XMPPAcceptanceTestHelper {
 	
 	private TestPacket preparePacket(String packetXml) {
 		
-		packetXml = packetXml.replaceAll(".*>(.*)<[^/].*", "");
+		packetXml = packetXml.replaceAll(".*>(.*)<[^/].*", "")
+				.replaceAll("/^.*>([^>]*)$/m", "")
+				.replaceAll("/^([^<]*)<.*$/m", "");
 		TestPacket p = new TestPacket(packetXml);
 		
 		String id = Packet.nextID();
@@ -115,7 +117,7 @@ public class XMPPAcceptanceTestHelper {
 	protected Packet sendPacket(Packet p) throws Exception
 	{
 		try {
-			SyncPacketSend.getReply(xmppConnection, p);
+			Packet reply = SyncPacketSend.getReply(xmppConnection, p);
 		    return PacketReceivedQueue.getPacketWithId(p.getPacketID());
 		} catch (Exception e) {
 			throw new Exception(e.getMessage());
