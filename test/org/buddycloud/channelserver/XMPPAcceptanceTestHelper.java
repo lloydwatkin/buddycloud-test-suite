@@ -43,8 +43,8 @@ import org.jivesoftware.smack.util.SyncPacketSend;
  */
 public class XMPPAcceptanceTestHelper {
 
-	private TestContext tc;
-	private XMPPConnection xmppConnection;
+	private   TestContext tc;
+	protected XMPPConnection xmppConnection;
 
 	/**
 	 * @throws XMPPException 

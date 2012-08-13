@@ -33,7 +33,7 @@ System.out.println(reply);
 		Packet response = sendPacket(packet);
 		String postId   = getValue(response, "/iq/pubsub/publish/item[@id]");
 
-    	TestPacket followUp = getPacket("resources/channel/node/create-post.request");
+    	TestPacket followUp = getPacket("resources/channel/node/create-reply.request");
     	followUp.setVariable("$IN_REPLY_TO", postId);
     	Packet reply = sendPacket(followUp);
 

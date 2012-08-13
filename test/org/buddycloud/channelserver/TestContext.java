@@ -34,6 +34,8 @@ public class TestContext {
 
 	private String to;
 	private String topicChannelServer;
+	
+	private String resourcePrefix;
 
 	/**
 	 * @return the clientUser
@@ -132,6 +134,16 @@ public class TestContext {
 		this.clientResource = clientResource;
 	}
 	
+	public void setResourcePrefix(String prefix)
+	{
+	    this.resourcePrefix = prefix;	
+	}
+	
+	public String getResourcePrefix()
+	{
+		return this.resourcePrefix;
+	}
+	
 	/**
 	 * @return 
 	 * 
@@ -145,6 +157,7 @@ public class TestContext {
 		properties.put("$USER_NAME", clientUser);
 		properties.put("$CHANNEL_SERVER", to);
 		properties.put("$TOPIC_CHANNEL", topicChannelServer);
+		properties.put("$RESOURCE_PREFIX", resourcePrefix);
 		
 		return properties;
 	}

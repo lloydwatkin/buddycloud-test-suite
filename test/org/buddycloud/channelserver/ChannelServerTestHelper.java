@@ -48,6 +48,11 @@ public class ChannelServerTestHelper extends XMPPAcceptanceTestHelper {
 		tc.setServerPort(Integer.parseInt(configuration
 				.getProperty("testclient_xmppport")));
 		
+		long defaultPrefix = (long) (System.currentTimeMillis() / 1000L);
+		tc.setResourcePrefix(
+		    configuration.getProperty("channel_prefix", String.valueOf(defaultPrefix))
+		);
+
 		setContext(tc);
 		initConnection();
 	}

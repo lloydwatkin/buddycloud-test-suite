@@ -1,16 +1,16 @@
-<iq from='$USER_JID' to='$CHANNEL_SERVER' id='$ID' type='set' xmlns='jabber:client'>
+<iq from='$USER_JID' to='$CHANNEL_SERVER' type='set' id='$ID' xmlns='jabber:client'>
     <pubsub xmlns='http://jabber.org/protocol/pubsub'>
-        <create node='/user/little_star@topics.ip-10-66-2-93/posts'/>
+        <create node='/user/$RESOURCE_PREFIX-channel@$TOPIC_CHANNEL/$NODE'/>
         <configure>
             <x xmlns='jabber:x:data' type='submit'>
                 <field var='FORM_TYPE' type='hidden'>
                     <value>http://jabber.org/protocol/pubsub#node_config</value>
                 </field>
                 <field var='pubsub#title'>
-                    <value>little star</value>
+                    <value>test-channel-name</value>
                 </field>
                 <field var='pubsub#description'>
-                    <value>how I wonder what you are</value>
+                    <value>test-channel-description</value>
                 </field>
                 <field var='pubsub#access_model'>
                     <value>open</value>
@@ -19,7 +19,7 @@
                     <value>publishers</value>
                 </field>
                 <field var='buddycloud#default_affiliation'>
-                    <value>publisher</value>
+                     <value>publisher</value>
                 </field>
             </x>
         </configure>
