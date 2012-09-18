@@ -19,7 +19,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.apache.log4j.Logger;
+
 import org.buddycloud.channelserver.PacketReceivedQueue;
+import org.buddycloud.channelserver.TestContext;
 import org.apache.commons.io.IOUtils;
 import org.jaxen.JaxenException;
 import org.jdom2.Attribute;
@@ -46,6 +49,8 @@ public class XMPPAcceptanceTestHelper {
 	private   TestContext tc;
 	protected XMPPConnection xmppConnection;
 
+	private final static Logger LOGGER = Logger.getLogger("XMPPAcceptanceTestHelper");
+	
 	/**
 	 * @throws XMPPException 
 	 * 
@@ -54,15 +59,15 @@ public class XMPPAcceptanceTestHelper {
 		ConnectionConfiguration cc = new ConnectionConfiguration(
 				tc.getServerHostname(), tc.getServerPort());
 
-		this.xmppConnection      = new XMPPConnection(cc);
+		this.xmppConnection = new XMPPConnection(cc);
 		xmppConnection.connect();
 		xmppConnection.login(tc.getClientUser(), tc.getClientPass(), tc.getClientResource());
-		
+        
 		xmppConnection.addPacketListener(new PacketListener() {
 			@Override
 			public void processPacket(Packet packet) {
-				System.out.println("    --- Receiving packet ---");
-				System.out.println(packet.toXML());
+				LOGGER.debug("    --- Receiving packet ---");
+				LOGGER.debug(packet.toXML());
 			}
 		}, new PacketFilter() {
 			@Override
@@ -73,8 +78,8 @@ public class XMPPAcceptanceTestHelper {
 	    xmppConnection.addPacketSendingListener(new PacketListener() {
 			@Override
 			public void processPacket(Packet packet) {
-				System.out.println("    --- Sending packet ---");
-				System.out.println(packet.toXML());
+				LOGGER.debug("    --- Sending packet ---");
+				LOGGER.debug(packet.toXML());
 			}
 		}, new PacketFilter() {
 			@Override
@@ -118,8 +123,12 @@ public class XMPPAcceptanceTestHelper {
 	
 	protected Packet sendPacket(Packet p) throws Exception
 	{
+		Packet reply = null;
 		try {
-			Packet reply = SyncPacketSend.getReply(xmppConnection, p);
+			reply = SyncPacketSend.getReply(xmppConnection, p);
+			if (reply.getPacketID().toString().equals(p.getPacketID().toString())) {
+				return reply;
+			}
 		    return PacketReceivedQueue.getPacketWithId(p.getPacketID());
 		} catch (Exception e) {
 			throw new Exception(e.getMessage());

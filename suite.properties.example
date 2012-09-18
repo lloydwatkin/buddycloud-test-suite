@@ -1,0 +1,9 @@
+channelserver_to_test=channels.hostname
+topic_channel_server=topics.hostname
+
+testclient_user=testuser
+testclient_pass=testuserpassword
+testclient_resource=BC_TEST_CLIENT
+testclient_xmpphost=hostname
+testclient_xmppservice=hostname
+testclient_xmppport=5222

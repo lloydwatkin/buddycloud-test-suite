@@ -3,3 +3,5 @@
 .project
 .classpath
 .DS_Store
+target
+suite.properties

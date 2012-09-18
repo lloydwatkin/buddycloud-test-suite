@@ -24,60 +24,51 @@ import org.jivesoftware.smack.packet.Packet;
 /**
  * @author Lloyd Watkin <lloyd.watkin@surevine.com>
  */
-public class PacketReceivedQueue
-{
+public class PacketReceivedQueue {
 	private static HashMap<String, Packet> packets = null;
 
-	public static void addPacket(Packet packet)
-	{
-	   if (null == packets) {
-		   packets = new HashMap<String, Packet>();
-		   System.out.println("Initialising packets");
-	   }
-	   System.out.println("Adding packet: ");
-	   System.out.println(packet.getPacketID());
-	   packets.put(packet.getPacketID(), packet);
+	public static void addPacket(Packet packet) {
+		if (null == packets) {
+			packets = new HashMap<String, Packet>();
+		}
+		packets.put(packet.getPacketID(), packet);
 	}
 
-	public static HashMap<String, Packet> getPackets()
-	{		
+	public static HashMap<String, Packet> getPackets() {
 		return packets;
 	}
-	
+
 	public static Packet getPacketWithId(String id)
-	    throws InvalidParameterException, InterruptedException
-	{
-		return getPacketWithId(id, 5000);
+			throws InvalidParameterException, InterruptedException {
+		return getPacketWithId(id, 15000);
 	}
 
-	public static Packet getPacketWithId(String id, long timeout) 
-        throws InvalidParameterException, InterruptedException 
-	{
-		long t   = System.currentTimeMillis();
+	public static Packet getPacketWithId(String id, long timeout)
+			throws InvalidParameterException, InterruptedException {
+		long t = System.currentTimeMillis();
 		long end = t + timeout;
 		while (System.currentTimeMillis() < end) {
-	        for (Map.Entry<String, Packet> packet : packets.entrySet()) {
-		        if (packet.getKey() == id) {
-		            return packet.getValue();
-		        }
+			for (Map.Entry<String, Packet> packet : packets.entrySet()) {
+				if (true == packet.getKey().toString().equals(id)) {
+					return packet.getValue();
+				}
 			}
-		  Thread.sleep(20);
+			Thread.sleep(5);
 		}
-		throw new InvalidParameterException("Packet not received...");
+		throw new InvalidParameterException("Packet not received in " + timeout
+				+ " milliseconds...");
 	}
 
-	public static void clearPackets()
-	{
+	public static void clearPackets() {
 		for (Map.Entry<String, Packet> packet : packets.entrySet()) {
-	        packets.remove(packet.getKey());
+			packets.remove(packet.getKey());
 		}
 	}
 
-	public static void removePacket(String id)
-	{
+	public static void removePacket(String id) {
 		for (Map.Entry<String, Packet> packet : packets.entrySet()) {
 			if (packet.getKey() == id) {
-	            packets.remove(packet.getKey());
+				packets.remove(packet.getKey());
 			}
 		}
 	}

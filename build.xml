@@ -1,5 +1,5 @@
 <project default="all">
-    <property name="test-directory" location="test" />
+    <property name="test-directory" location="src/test" />
     <property name="verbose" value="true" />
     <property name="library-directory" value="./lib" />
 
