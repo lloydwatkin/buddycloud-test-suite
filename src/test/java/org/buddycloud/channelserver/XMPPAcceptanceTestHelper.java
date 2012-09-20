@@ -19,14 +19,19 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.management.RuntimeErrorException;
+
 import org.apache.log4j.Logger;
 
 import org.buddycloud.channelserver.PacketReceivedQueue;
 import org.buddycloud.channelserver.TestContext;
+
 import org.apache.commons.io.IOUtils;
 import org.jaxen.JaxenException;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
+import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Text;
 import org.jdom2.input.SAXBuilder;
@@ -140,8 +145,15 @@ public class XMPPAcceptanceTestHelper {
 
 	protected String getValue(Packet p, String xPath) throws JDOMException,
 			IOException, JaxenException {
-		Attribute evaluateFirst = (Attribute) getEl(p, xPath);
-		return evaluateFirst == null ? null : evaluateFirst.getValue();
+		Object evaluateFirst = getEl(p, xPath);
+		if (evaluateFirst instanceof Attribute) {
+			Attribute attribute = (Attribute) evaluateFirst;
+			return attribute.getValue();
+		} else if (evaluateFirst instanceof Element) {
+			throw new RuntimeErrorException(null, "XPath maps to element, not attribute");
+		}
+		System.out.println(evaluateFirst.getClass().getName());
+		return evaluateFirst == null ? null : ((Attribute) evaluateFirst).getValue();
 	}
 
 	protected String getText(Packet p, String xPath) throws JDOMException,

@@ -1,16 +1,11 @@
 package org.buddycloud.channelserver.channel.node;
 
-import java.util.Collection;
-import java.util.Iterator;
+import junit.framework.Assert;
 
 import org.apache.log4j.Logger;
 import org.buddycloud.channelserver.ChannelServerTestHelper;
 import org.buddycloud.channelserver.TestPacket;
-
-import junit.framework.Assert;
 import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.packet.PacketExtension;
-import org.jivesoftware.smackx.pubsub.packet.PubSub;
 import org.junit.Test;
 
 /**
@@ -31,7 +26,6 @@ public class PostTest
 		Assert.assertEquals(packet.getPacketID(), getValue(reply, "/iq/@id"));
 		Assert.assertTrue(exists(reply, "/iq/pubsub/publish/item[@id]"));
 		Assert.assertTrue(exists(reply, "/iq/pubsub/publish[@node]"));
-
     }
     
     @Test
@@ -39,13 +33,13 @@ public class PostTest
     {
     	Packet packet   = getPacket("resources/channel/node/create-post.request");
 		Packet response = sendPacket(packet);
-		String postId   = getValue(response, "/iq/pubsub/publish/item[@id]");
+		String postId   = getValue(response, "/iq/pubsub/publish/item/@id");
 
     	TestPacket followUp = getPacket("resources/channel/node/create-reply.request");
     	followUp.setVariable("$IN_REPLY_TO", postId);
     	Packet reply = sendPacket(followUp);
 
-		Assert.assertEquals(packet.getPacketID(), getValue(reply, "/iq/@id"));
+		Assert.assertEquals(reply.getPacketID(), getValue(reply, "/iq/@id"));
 		Assert.assertTrue(exists(reply, "/iq/pubsub/publish/item[@id]"));
 		Assert.assertTrue(exists(reply, "/iq/pubsub/publish[@node]"));
     }
