@@ -1,10 +1,16 @@
 package org.buddycloud.channelserver.channel.node;
 
+import java.util.Collection;
+import java.util.Iterator;
+
+import org.apache.log4j.Logger;
 import org.buddycloud.channelserver.ChannelServerTestHelper;
 import org.buddycloud.channelserver.TestPacket;
 
 import junit.framework.Assert;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.PacketExtension;
+import org.jivesoftware.smackx.pubsub.packet.PubSub;
 import org.junit.Test;
 
 /**
@@ -14,15 +20,18 @@ import org.junit.Test;
 public class PostTest 
     extends ChannelServerTestHelper
 {
+	private static final Logger LOGGER = Logger.getLogger(PostTest.class);
+	
     @Test
     public void canPostToPostsNodeTest() throws Exception
     {
     	Packet packet = getPacket("resources/channel/node/create-post.request");
 		Packet reply  = sendPacket(packet);
-
+      
 		Assert.assertEquals(packet.getPacketID(), getValue(reply, "/iq/@id"));
 		Assert.assertTrue(exists(reply, "/iq/pubsub/publish/item[@id]"));
 		Assert.assertTrue(exists(reply, "/iq/pubsub/publish[@node]"));
+
     }
     
     @Test

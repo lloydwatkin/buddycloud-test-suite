@@ -42,27 +42,30 @@ import org.jivesoftware.smack.util.SyncPacketSend;
 
 /**
  * @author Abmar
- *
+ * 
  */
 public class XMPPAcceptanceTestHelper {
 
-	private   TestContext tc;
+	private TestContext tc;
 	protected XMPPConnection xmppConnection;
 
-	private final static Logger LOGGER = Logger.getLogger("XMPPAcceptanceTestHelper");
-	
+	private final static Logger LOGGER = Logger
+			.getLogger("XMPPAcceptanceTestHelper");
+
 	/**
-	 * @throws XMPPException 
+	 * Initialise XMPP connection
 	 * 
+	 * @throws Exception
 	 */
-	protected void initConnection() throws XMPPException {
+	protected void initConnection() throws Exception {
 		ConnectionConfiguration cc = new ConnectionConfiguration(
 				tc.getServerHostname(), tc.getServerPort());
 
 		this.xmppConnection = new XMPPConnection(cc);
 		xmppConnection.connect();
-		xmppConnection.login(tc.getClientUser(), tc.getClientPass(), tc.getClientResource());
-        
+		xmppConnection.login(tc.getClientUser(), tc.getClientPass(),
+				tc.getClientResource());
+
 		xmppConnection.addPacketListener(new PacketListener() {
 			@Override
 			public void processPacket(Packet packet) {
@@ -75,7 +78,7 @@ public class XMPPAcceptanceTestHelper {
 				return packet instanceof IQ;
 			}
 		});
-	    xmppConnection.addPacketSendingListener(new PacketListener() {
+		xmppConnection.addPacketSendingListener(new PacketListener() {
 			@Override
 			public void processPacket(Packet packet) {
 				LOGGER.debug("    --- Sending packet ---");
@@ -87,60 +90,60 @@ public class XMPPAcceptanceTestHelper {
 				return packet instanceof IQ;
 			}
 		});
+		Packet packet = getPacket("resources/register/register.request");
+		sendPacket(packet);
 	}
 
 	public void setContext(TestContext tc) {
 		this.tc = tc;
 	}
-	
+
 	private TestPacket preparePacket(String packetXml) {
-		
+
 		packetXml = packetXml.replaceAll(".*>(.*)<[^/].*", "")
 				.replaceAll("/^.*>([^>]*)$/m", "")
-				.replaceAll("/^([^<]*)<.*$/m", "")
-				.replaceAll("\n", "")
+				.replaceAll("/^([^<]*)<.*$/m", "").replaceAll("\n", "")
 				.replaceAll("\r", "");
 		TestPacket p = new TestPacket(packetXml);
-		
+
 		String id = Packet.nextID();
 		Map<String, String> map = tc.toMap();
 		map.put("$ID", id);
 		for (Entry<String, String> entry : map.entrySet()) {
 			p.setVariable(entry.getKey(), entry.getValue());
 		}
-		
+
 		p.setPacketID(id);
 		p.setTo(tc.getTo());
-		
+
 		return p;
 	}
-	
+
 	protected TestPacket getPacket(String stanzaFile) throws IOException {
-		String requestXml = IOUtils.toString(
-				new FileInputStream(stanzaFile));
+		String requestXml = IOUtils.toString(new FileInputStream(stanzaFile));
 		return preparePacket(requestXml);
 	}
-	
-	protected Packet sendPacket(Packet p) throws Exception
-	{
+
+	protected Packet sendPacket(Packet p) throws Exception {
 		Packet reply = null;
 		try {
 			reply = SyncPacketSend.getReply(xmppConnection, p);
-			if (reply.getPacketID().toString().equals(p.getPacketID().toString())) {
+			if (reply.getPacketID().toString()
+					.equals(p.getPacketID().toString())) {
 				return reply;
 			}
-		    return PacketReceivedQueue.getPacketWithId(p.getPacketID());
+			return PacketReceivedQueue.getPacketWithId(p.getPacketID());
 		} catch (Exception e) {
 			throw new Exception(e.getMessage());
 		}
 	}
-	
+
 	protected String getValue(Packet p, String xPath) throws JDOMException,
 			IOException, JaxenException {
 		Attribute evaluateFirst = (Attribute) getEl(p, xPath);
 		return evaluateFirst == null ? null : evaluateFirst.getValue();
 	}
-	
+
 	protected String getText(Packet p, String xPath) throws JDOMException,
 			IOException, JaxenException {
 		Text evaluateFirst = (Text) getEl(p, xPath);
@@ -156,10 +159,9 @@ public class XMPPAcceptanceTestHelper {
 			IOException {
 		SAXBuilder saxBuilder = new SAXBuilder();
 		saxBuilder.setFeature("http://xml.org/sax/features/namespaces", false);
-		Document replyDoc = saxBuilder.build(
-				IOUtils.toInputStream(p.toXML()));
-		Object evaluateFirst = XPathFactory.instance().compile(
-				xPath).evaluateFirst(replyDoc);
+		Document replyDoc = saxBuilder.build(IOUtils.toInputStream(p.toXML()));
+		Object evaluateFirst = XPathFactory.instance().compile(xPath)
+				.evaluateFirst(replyDoc);
 		return evaluateFirst;
 	}
 }
