@@ -1,0 +1,3 @@
+<iq from='$USER_JID' to='$CHANNEL_SERVER' type='set' id='$ID' xmlns='jabber:client'>
+    <query xmlns='jabber:iq:register'/>
+</iq>
