@@ -8,7 +8,7 @@
                         <name>$USER_NAME@$USER_SERVICENAME</name>
                     </author>
                     <updated>2012-08-08T14:00:30.740Z</updated>
-                    <thr:in-reply-to ref="$IN_REPLY_TO"/>
+                    <thr:in-reply-to ref="tag:null@$CHANNEL_SERVER,/user/$USER_NAME@$USER_SERVICENAME/posts,$IN_REPLY_TO"/>
                 </entry>
             </item>
         </publish>

@@ -36,7 +36,8 @@ public class PostTest
 		String postId   = getValue(response, "/iq/pubsub/publish/item/@id");
 
     	TestPacket followUp = getPacket("resources/channel/node/create-reply.request");
-    	followUp.setVariable("$IN_REPLY_TO", postId);
+        followUp.setVariable("$IN_REPLY_TO", postId);
+
     	Packet reply = sendPacket(followUp);
 
 		Assert.assertEquals(reply.getPacketID(), getValue(reply, "/iq/@id"));

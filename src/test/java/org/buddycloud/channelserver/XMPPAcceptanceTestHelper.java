@@ -103,7 +103,7 @@ public class XMPPAcceptanceTestHelper {
 		this.tc = tc;
 	}
 
-	private TestPacket preparePacket(String packetXml) {
+	public TestPacket preparePacket(String packetXml) {
 
 		packetXml = packetXml.replaceAll(".*>(.*)<[^/].*", "")
 				.replaceAll("/^.*>([^>]*)$/m", "")
@@ -139,7 +139,7 @@ public class XMPPAcceptanceTestHelper {
 			}
 			return PacketReceivedQueue.getPacketWithId(p.getPacketID());
 		} catch (Exception e) {
-			throw new Exception(e.getMessage());
+			throw new Exception(e.getMessage() + "\nPacket sent:\n" + p.toXML());
 		}
 	}
 
