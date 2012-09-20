@@ -17,9 +17,10 @@ package org.buddycloud.channelserver.discovery;
 
 import junit.framework.Assert;
 
+import org.apache.log4j.Logger;
 import org.buddycloud.channelserver.ChannelServerTestHelper;
-import org.buddycloud.channelserver.TestPacket;
 import org.jivesoftware.smack.packet.Packet;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -28,18 +29,16 @@ import org.junit.Test;
  */
 public class ChannelMetadataTest extends ChannelServerTestHelper {
 
+	public static final Logger LOGGER = Logger.getLogger(ChannelMetadataTest.class);
+	
 	@Test
+	@Ignore("Not supported by server yet")
 	public void testMetadata() throws Exception {
 		
-		Packet discoverItem = getPacket("resources/discovery/discovery-item.request");
-		Packet discoverItemReply = sendPacket(discoverItem);
-		
-		String node = getValue(discoverItemReply, "/iq/query/item[1]/@node");
-		
-		TestPacket packet = getPacket("resources/discovery/discovery-node.request");
-		packet.setVariable("$NODE", node);
-		
+		Packet packet = getPacket("resources/channel/node/discovery-item.request");
+		System.out.println("Outgoing message: " + packet.toXML());
 		Packet reply = sendPacket(packet);
+
 
 		Assert.assertEquals(packet.getPacketID(), getValue(reply, "/iq/@id"));
 		Assert.assertTrue(exists(reply, 
