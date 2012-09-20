@@ -16,6 +16,7 @@
 package org.buddycloud.channelserver;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -125,8 +126,11 @@ public class XMPPAcceptanceTestHelper {
 	}
 
 	protected TestPacket getPacket(String stanzaFile) throws IOException {
-		String requestXml = IOUtils.toString(new FileInputStream(stanzaFile));
-		return preparePacket(requestXml);
+		return preparePacket(getPacketXml(stanzaFile));
+	}
+	
+	public String getPacketXml(String stanzaFile) throws FileNotFoundException, IOException {
+		return IOUtils.toString(new FileInputStream(stanzaFile));
 	}
 
 	protected Packet sendPacket(Packet p) throws Exception {
@@ -137,12 +141,21 @@ public class XMPPAcceptanceTestHelper {
 					.equals(p.getPacketID().toString())) {
 				return reply;
 			}
-			return PacketReceivedQueue.getPacketWithId(p.getPacketID());
+			
 		} catch (Exception e) {
-			throw new Exception(e.getMessage() + "\nPacket sent:\n" + p.toXML());
+			if (!e.getMessage().equals("bad-request(-1)")) {
+			    throw new Exception(e.getMessage() + "\nPacket sent:\n" + p.toXML());
+			}
 		}
+		return PacketReceivedQueue.getPacketWithId(p.getPacketID());
 	}
 
+	protected Packet sendPacketWithNextId(Packet p) throws Exception {
+
+		p.setPacketID(Packet.nextID());
+		return sendPacket(p);
+	}
+	
 	protected String getValue(Packet p, String xPath) throws JDOMException,
 			IOException, JaxenException {
 		Object evaluateFirst = getEl(p, xPath);

@@ -1,0 +1,27 @@
+<iq from='$USER_JID' to='$CHANNEL_SERVER' type='set' id='$ID' xmlns='jabber:client'>
+    <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+        <create node='/user/$USER_NAME@$USER_SERVICENAME/$RESOURCE_PREFIX'/>
+        <configure>
+            <x xmlns='jabber:x:data' type='submit'>
+                <field var='FORM_TYPE' type='hidden'>
+                    <value>http://jabber.org/protocol/pubsub#node_config</value>
+                </field>
+                <field var='pubsub#title'>
+                    <value>test-channel-name</value>
+                </field>
+                <field var='pubsub#description'>
+                    <value>test-channel-description</value>
+                </field>
+                <field var='pubsub#access_model'>
+                    <value>open</value>
+                </field>
+                <field var='pubsub#publish_model'>
+                    <value>publishers</value>
+                </field>
+                <field var='buddycloud#default_affiliation'>
+                     <value>publisher</value>
+                </field>
+            </x>
+        </configure>
+    </pubsub>
+</iq>

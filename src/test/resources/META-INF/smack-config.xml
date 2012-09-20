@@ -31,4 +31,6 @@
     <!-- Port of the local Socks5 proxy -->
     <packetCollectorSize>10000</packetCollectorSize>
 
+    <!-- Throw exceptions when receiving error stanzas -->
+    <throwErrorStanzaExceptions>false</throwErrorStanzaExceptions>
 </smack>
