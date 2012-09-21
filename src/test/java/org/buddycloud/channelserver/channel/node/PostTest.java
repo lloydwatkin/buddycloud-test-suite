@@ -7,6 +7,7 @@ import org.buddycloud.channelserver.ChannelServerTestHelper;
 import org.buddycloud.channelserver.TestPacket;
 import org.jivesoftware.smack.packet.Packet;
 import org.junit.Test;
+import org.junit.Ignore;
 
 /**
  * @author Lloyd Watkin <lloyd.watkin@surevine.com>
@@ -18,7 +19,7 @@ public class PostTest
 	private static final Logger LOGGER = Logger.getLogger(PostTest.class);
 	
     @Test
-    public void canPostToPostsNodeTest() throws Exception
+    public void testCanPostToPostsNode() throws Exception
     {
     	Packet packet = getPacket("resources/channel/node/create-post.request");
 		Packet reply  = sendPacket(packet);
@@ -29,7 +30,7 @@ public class PostTest
     }
     
     @Test
-    public void canPostAReplyTest() throws Exception
+    public void testCanPostAReply() throws Exception
     {
     	Packet packet   = getPacket("resources/channel/node/create-post.request");
 		Packet response = sendPacket(packet);
@@ -44,4 +45,8 @@ public class PostTest
 		Assert.assertTrue(exists(reply, "/iq/pubsub/publish/item[@id]"));
 		Assert.assertTrue(exists(reply, "/iq/pubsub/publish[@node]"));
     }
+    
+    @Test
+    @Ignore("Not written yet")
+    public void testPostingToNodeWhichDoesntExistReturnsErrorStanza() throws Exception { }
 }
