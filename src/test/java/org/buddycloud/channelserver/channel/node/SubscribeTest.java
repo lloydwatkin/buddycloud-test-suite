@@ -79,15 +79,21 @@ public class SubscribeTest extends ChannelServerTestHelper {
 	}
 
 	@Test
-	@Ignore("Not ready yet")
 	public void testAttemptingToSubscribeWhenSubscribedReturnsErrorStanza()
 			throws Exception {
 		String node = createNode();
+		TestPacket packet = getPacket("resources/channel/node/subscribe/success.request");
+		packet.setVariable("$NODE", node);
+		sendPacket(packet);
 
-	}
+		TestPacket subscribeAgainPacket = getPacket("resources/channel/node/subscribe/success.request");
+		subscribeAgainPacket.setVariable("$NODE", node);
+		Packet reply = sendPacket(subscribeAgainPacket);
 
-	@Test
-	@Ignore("Not ready yet - can we do this without having multiple connections?")
-	public void testNotificationsAreSentUponSubscription() throws Exception {
+		Assert.assertEquals("error", getValue(reply, "/iq/@type"));
+		Assert.assertTrue(exists(reply,
+				"/iq[@type='error']/error[@type='WAIT']/policy-violation"));
+		Assert.assertTrue(exists(reply,
+				"/iq[@type='error']/error[@type='WAIT']/too-many-subscriptions"));
 	}
 }
