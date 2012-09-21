@@ -16,8 +16,10 @@
 package org.buddycloud.channelserver;
 
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.Properties;
 
+import org.jivesoftware.smack.packet.Packet;
 import org.junit.Before;
 
 /**
@@ -55,6 +57,12 @@ public class ChannelServerTestHelper extends XMPPAcceptanceTestHelper {
 
 		setContext(tc);
 		initConnection();
+	}
+	
+	public String createNode() throws Exception {
+		Packet packet = getPacket("resources/channel/node/create/success.request");
+		sendPacket(packet);
+		return getValue(packet, "/iq/pubsub/create/@node");
 	}
 	
 }

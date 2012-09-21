@@ -4,6 +4,7 @@ import junit.framework.Assert;
 
 import org.apache.log4j.Logger;
 import org.buddycloud.channelserver.ChannelServerTestHelper;
+import org.buddycloud.channelserver.TestPacket;
 import org.jivesoftware.smack.packet.Packet;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -17,7 +18,7 @@ public class SubscribeTest extends ChannelServerTestHelper {
 
 	@Test
 	public void testNotProvidingNodeReturnsErrorStanza() throws Exception {
-		
+
 		Packet packet = getPacket("resources/channel/node/subscribe/missing-nodeid.request");
 		Packet reply = sendPacket(packet);
 
@@ -34,7 +35,7 @@ public class SubscribeTest extends ChannelServerTestHelper {
 
 		Packet packet = getPacket("resources/channel/node/subscribe/bad-jid.request");
 		Packet reply = sendPacket(packet);
-		
+
 		Assert.assertEquals(packet.getPacketID(), getValue(reply, "/iq/@id"));
 		Assert.assertEquals("error", getValue(reply, "/iq/@type"));
 		Assert.assertTrue(exists(reply,
@@ -49,11 +50,27 @@ public class SubscribeTest extends ChannelServerTestHelper {
 
 		Packet packet = getPacket("resources/channel/node/subscribe/not-existing-node.request");
 		Packet reply = sendPacket(packet);
-		
+
 		Assert.assertEquals(packet.getPacketID(), getValue(reply, "/iq/@id"));
 		Assert.assertEquals("error", getValue(reply, "/iq/@type"));
 		Assert.assertTrue(exists(reply,
 				"/iq[@type='error']/error[@type='CANCEL']/item-not-found"));
+	}
+
+	@Test
+	public void testSuccesfulSubscriptionReturnsExceptedResponse()
+			throws Exception {
+		String node = createNode();
+		TestPacket packet = getPacket("resources/channel/node/subscribe/success.request");
+		packet.setVariable("$NODE", node);
+		Packet reply = sendPacket(packet);
+
+		Assert.assertEquals("result", getValue(reply, "/iq/@type"));
+		Assert.assertEquals("subscribed",
+				getValue(reply, "/iq/pubsub/subscription/@subscription"));
+		Assert.assertEquals("member",
+				getValue(reply, "/iq/pubsub/affiliation/@affiliation"));
+
 	}
 
 	@Test
@@ -65,12 +82,8 @@ public class SubscribeTest extends ChannelServerTestHelper {
 	@Ignore("Not ready yet")
 	public void testAttemptingToSubscribeWhenSubscribedReturnsErrorStanza()
 			throws Exception {
-	}
+		String node = createNode();
 
-	@Test
-	@Ignore("Not ready yet")
-	public void testSuccesfulSubscriptionReturnsExceptedResponse()
-			throws Exception {
 	}
 
 	@Test
