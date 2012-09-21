@@ -1,0 +1,8 @@
+<iq type='set'
+    from='$USER_JID'
+    to='$CHANNEL_SERVER'
+    id='$ID'>
+  <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+    <unsubscribe node='/user/$USER_NAME@$USER_SERVICENAME/$RESOURCE_PREFIX' jid='$USER_JID'/>
+  </pubsub>
+</iq>
