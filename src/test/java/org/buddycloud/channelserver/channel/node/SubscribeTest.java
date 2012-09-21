@@ -44,12 +44,16 @@ public class SubscribeTest extends ChannelServerTestHelper {
 	}
 
 	@Test
-	@Ignore("Not ready yet")
 	public void testTryingToSubscribeToNonExistentNodeReturnsErrorStanza()
 			throws Exception {
+
+		Packet packet = getPacket("resources/channel/node/subscribe/not-existing-node.request");
+		Packet reply = sendPacket(packet);
 		
-		// System.out.println("\n\n" + packet.toXML() + "\n");
-		// System.out.println(reply.toXML());
+		Assert.assertEquals(packet.getPacketID(), getValue(reply, "/iq/@id"));
+		Assert.assertEquals("error", getValue(reply, "/iq/@type"));
+		Assert.assertTrue(exists(reply,
+				"/iq[@type='error']/error[@type='CANCEL']/item-not-found"));
 	}
 
 	@Test
