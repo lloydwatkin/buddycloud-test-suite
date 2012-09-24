@@ -13,7 +13,7 @@ public class CreateTest extends ChannelServerTestHelper {
 	@Test
 	public void testNotProvidingNodeReturnsErrorStanza() throws Exception {
 		
-		TestPacket packet = getPacket("resources/channel/node/create/missing-nodeid.request");
+		TestPacket packet = getPacket("resources/channel/node/create/missing-node-id.request");
 		Packet reply = sendPacket(packet);
 
 		Assert.assertEquals("error", getValue(reply, "/iq/@type"));

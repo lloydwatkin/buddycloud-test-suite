@@ -19,7 +19,7 @@ public class SubscribeTest extends ChannelServerTestHelper {
 	@Test
 	public void testNotProvidingNodeReturnsErrorStanza() throws Exception {
 
-		Packet packet = getPacket("resources/channel/node/subscribe/missing-nodeid.request");
+		Packet packet = getPacket("resources/channel/node/subscribe/missing-node-id.request");
 		Packet reply = sendPacket(packet);
 
 		Assert.assertEquals(packet.getPacketID(), getValue(reply, "/iq/@id"));
