@@ -36,7 +36,7 @@ public class ConfigureTest extends ChannelServerTestHelper {
 	}
 
 	@Test
-	@Ignore("Not ready yet")
+	@Ignore("Complete when more helper functionality in place")
 	public void testUserMustBeOwnerToModifyConfiguration() throws Exception {
 	}
 
