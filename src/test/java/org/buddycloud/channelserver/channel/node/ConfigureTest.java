@@ -41,12 +41,6 @@ public class ConfigureTest extends ChannelServerTestHelper {
 	}
 
 	@Test
-	@Ignore("Not ready yet")
-	public void testNotProvidingValidStanzaResultsInErrorResponse()
-			throws Exception {
-	}
-
-	@Test
 	public void testSuccessfulConfigurationRetunsSuccessStanza()
 			throws Exception {
 
@@ -76,5 +70,17 @@ public class ConfigureTest extends ChannelServerTestHelper {
 						"/iq/query[@node='"
 								+ node
 								+ "']/x[@type='result']/field[@var='pubsub#default_affiliation']/value/text()"));
+	}
+	
+	@Test
+	public void testNotProvidingValidStanzaResultsInErrorResponse()
+			throws Exception {
+		String node = createNode();
+		TestPacket packet = getPacket("resources/channel/node/configure/invalid.request");
+		packet.setVariable("$NODE", node);
+		Packet reply = sendPacket(packet);
+		
+		Assert.assertEquals("error", getValue(reply, "/iq/@type"));
+		Assert.assertTrue(exists(reply, "/iq/error[@type='MODIFY']/bad-request"));
 	}
 }
