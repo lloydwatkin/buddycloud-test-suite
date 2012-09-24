@@ -105,13 +105,13 @@ public class XMPPAcceptanceTestHelper {
 	}
 
 	public TestPacket preparePacket(String packetXml) {
-
-		packetXml = packetXml.replaceAll(".*>(.*)<[^/].*", "")
-				.replaceAll("/^.*>([^>]*)$/m", "")
-				.replaceAll("/^([^<]*)<.*$/m", "").replaceAll("\n", "")
+		System.out.println("packetXml: " + packetXml);
+		packetXml = packetXml
+				.replaceAll(">\\s+<", "><")
+				.replaceAll("\n", "")
 				.replaceAll("\r", "");
-		TestPacket p = new TestPacket(packetXml);
 
+		TestPacket p = new TestPacket(packetXml);
 		String id = Packet.nextID();
 		Map<String, String> map = tc.toMap();
 		map.put("$ID", id);
@@ -143,9 +143,7 @@ public class XMPPAcceptanceTestHelper {
 			}
 			
 		} catch (Exception e) {
-			if (!e.getMessage().equals("bad-request(-1)")) {
-			    throw new Exception(e.getMessage() + "\nPacket sent:\n" + p.toXML());
-			}
+			throw new Exception(e.getMessage() + "\nPacket sent: " + p.toXML());
 		}
 		return PacketReceivedQueue.getPacketWithId(p.getPacketID());
 	}
@@ -162,10 +160,11 @@ public class XMPPAcceptanceTestHelper {
 		if (evaluateFirst instanceof Attribute) {
 			Attribute attribute = (Attribute) evaluateFirst;
 			return attribute.getValue();
+		} else if (evaluateFirst instanceof Text) {
+			return ((Text) evaluateFirst).getText();
 		} else if (evaluateFirst instanceof Element) {
 			throw new RuntimeErrorException(null, "XPath maps to element, not attribute");
 		}
-		System.out.println(evaluateFirst.getClass().getName());
 		return evaluateFirst == null ? null : ((Attribute) evaluateFirst).getValue();
 	}
 

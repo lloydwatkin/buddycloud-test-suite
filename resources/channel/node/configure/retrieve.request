@@ -1,0 +1,7 @@
+<iq type='get'
+    from='$USER_JID'
+    to='$CHANNEL_SERVER'
+    id='$ID'>
+  <query xmlns='http://jabber.org/protocol/disco#info'
+         node='$NODE'/>
+</iq>
