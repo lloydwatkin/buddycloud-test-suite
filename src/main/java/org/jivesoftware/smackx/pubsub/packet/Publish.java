@@ -22,14 +22,7 @@ import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smackx.pubsub.Item;
 
 /**
- * A DiscoverInfo IQ packet, which is used by XMPP clients to request and
- * receive information to/from other XMPP entities.
- * <p>
- * 
- * The received information may contain one or more identities of the requested
- * XMPP entity, and a list of supported features by the requested XMPP entity.
- * 
- * @author Gaston Dombiak
+ * @author Lloyd Watkin <lloyd.watkin@surevine.com>
  */
 public class Publish implements PacketExtension {
 

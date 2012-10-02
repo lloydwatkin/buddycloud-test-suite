@@ -40,7 +40,7 @@ public class PacketReceivedQueue {
 
 	public static Packet getPacketWithId(String id)
 			throws InvalidParameterException, InterruptedException {
-		return getPacketWithId(id, 15000);
+		return getPacketWithId(id, 30000);
 	}
 
 	public static Packet getPacketWithId(String id, long timeout)

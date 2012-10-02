@@ -69,7 +69,7 @@ public class ConfigureTest extends ChannelServerTestHelper {
 						configuration,
 						"/iq/query[@node='"
 								+ node
-								+ "']/x[@type='result']/field[@var='pubsub#default_affiliation']/value/text()"));
+								+ "']/x[@type='result']/field[@var='buddycloud#default_affiliation']/value/text()"));
 	}
 	
 	@Test

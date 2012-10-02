@@ -4,7 +4,7 @@
       <disco xmlns='jabber:x:data' type='submit'>
         <feature name='broken-server' value='true' />
         <identity type='bug' />
-      </disco§>
+      </disco>
     </configure>
   </pubsub>
 </iq>
