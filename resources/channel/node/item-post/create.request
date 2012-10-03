@@ -1,0 +1,15 @@
+<iq from="$USER_JID" to="$CHANNEL_SERVER" type="set" id="$ID" xmlns="jabber:client">
+    <pubsub xmlns="http://jabber.org/protocol/pubsub">
+        <publish node="$NODE">
+            <item>
+                <entry xmlns="http://www.w3.org/2005/Atom" xmlns:thr="http://purl.org/syndication/thread/1.0">
+                    <content>this is a message</content>
+                    <author>
+                        <name>$USER_NAME@$USER_SERVICENAME</name>
+                    </author>
+                    <updated>2012-08-08T14:00:30.740Z</updated>
+                </entry>
+            </item>
+        </publish>
+    </pubsub>
+</iq>

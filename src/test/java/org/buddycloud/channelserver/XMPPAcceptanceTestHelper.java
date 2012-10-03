@@ -37,6 +37,7 @@ import org.jdom2.JDOMException;
 import org.jdom2.Text;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.xpath.XPathFactory;
+import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -52,8 +53,10 @@ import org.jivesoftware.smack.util.SyncPacketSend;
  */
 public class XMPPAcceptanceTestHelper {
 
-	private TestContext tc;
-	protected XMPPConnection xmppConnection;
+	private TestContext user1;
+	private TestContext user2;
+	
+	protected XMPPConnection[] xmppConnection = new XMPPConnection[2];
 
 	private final static Logger LOGGER = Logger
 			.getLogger("XMPPAcceptanceTestHelper");
@@ -64,69 +67,115 @@ public class XMPPAcceptanceTestHelper {
 	 * @throws Exception
 	 */
 	protected void initConnection() throws Exception {
+		
+		createConnection(1);
+		createConnection(2);
+	}
+
+	private void createConnection(final int i) throws Exception {
+		int arrayOffset = i - 1;
 		ConnectionConfiguration cc = new ConnectionConfiguration(
-				tc.getServerHostname(), tc.getServerPort());
+				user1.getServerHostname(), user1.getServerPort());
 
-		this.xmppConnection = new XMPPConnection(cc);
-		xmppConnection.connect();
-		xmppConnection.login(tc.getClientUser(), tc.getClientPass(),
-				tc.getClientResource());
+		this.xmppConnection[arrayOffset] = new XMPPConnection(cc);
+		
+		TestContext user = user1;
+		if (2 == i) {
+			user = user2;
+		}
+		xmppConnection[arrayOffset].connect();
+		xmppConnection[arrayOffset].login(user.getClientUser(), user.getClientPass(),
+				user.getClientResource());
 
-		xmppConnection.addPacketListener(new PacketListener() {
+		final String userJid = user.getClientUser();
+		xmppConnection[arrayOffset].addPacketListener(new PacketListener() {
 			@Override
 			public void processPacket(Packet packet) {
-				LOGGER.debug("    --- Receiving packet ---");
-				LOGGER.debug(packet.toXML());
+				if (packet.getTo().contains(userJid)) {
+					LOGGER.debug("    --- Receiving packet for user" + i + " ---");
+					LOGGER.debug(packet.toXML());
+				}
 			}
 		}, new PacketFilter() {
 			@Override
 			public boolean accept(Packet packet) {
-				return packet instanceof IQ;
+				return ((packet instanceof IQ) && (packet.getTo().contains(userJid)));
 			}
 		});
-		xmppConnection.addPacketSendingListener(new PacketListener() {
+		xmppConnection[arrayOffset].addPacketSendingListener(new PacketListener() {
 			@Override
 			public void processPacket(Packet packet) {
-				LOGGER.debug("    --- Sending packet ---");
-				LOGGER.debug(packet.toXML());
+				if (packet.getTo().contains(userJid)) {
+					LOGGER.debug("    --- Sending packet for user" + i + " ---");
+					LOGGER.debug(packet.toXML());
+				}
 			}
 		}, new PacketFilter() {
 			@Override
 			public boolean accept(Packet packet) {
-				return packet instanceof IQ;
+				return ((packet instanceof IQ) && (packet.getTo().contains(userJid)));
 			}
 		});
 		Packet packet = getPacket("resources/register/register.request");
-		sendPacket(packet);
+		sendPacket(packet, i);
 	}
 
-	public void setContext(TestContext tc) {
-		this.tc = tc;
+	public void setUsers(TestContext user1, TestContext user2) {
+		this.user1 = user1;
+		this.user2 = user2;
 	}
 
 	public TestPacket preparePacket(String packetXml) {
-		System.out.println("packetXml: " + packetXml);
+		return preparePacket(packetXml, 1);
+	}
+	
+	public TestPacket preparePacket(TestPacket packet) {
+	     	return preparePacket(packet.toXML());
+	}
+	
+	public TestPacket preparePacket(String packetXml, int userNumber) {
+		TestContext user = user1;
+		if (2 == userNumber) {
+			user = user2;
+		}
 		packetXml = packetXml
 				.replaceAll(">\\s+<", "><")
 				.replaceAll("\n", "")
 				.replaceAll("\r", "");
 
 		TestPacket p = new TestPacket(packetXml);
+		
 		String id = Packet.nextID();
-		Map<String, String> map = tc.toMap();
-		map.put("$ID", id);
-		for (Entry<String, String> entry : map.entrySet()) {
-			p.setVariable(entry.getKey(), entry.getValue());
-		}
-
 		p.setPacketID(id);
-		p.setTo(tc.getTo());
+		p.setTo(user.getTo());
+
+		variableReplacement(p, userNumber, id);
 
 		return p;
 	}
 
+	public void variableReplacement(TestPacket p, int userNumber, String packetId) {
+		
+		TestContext user = user1;
+		if (2 == userNumber) {
+			user = user2;
+		}
+		Map<String, String> map = user.toMap();
+		if (null != packetId) {
+			map.put("$ID", packetId);
+		}
+		map.put("$USER1_JID", user1.getClientUser() + "@" + user1.getServiceName());
+		map.put("$USER2_JID", user2.getClientUser() + "@" + user2.getServiceName());
+		for (Entry<String, String> entry : map.entrySet()) {
+			p.setVariable(entry.getKey(), entry.getValue());
+		}
+	}
+
+	protected TestPacket getPacket(String stanzaFile, int userNumber) throws IOException {
+		return preparePacket(getPacketXml(stanzaFile), userNumber);
+	}
 	protected TestPacket getPacket(String stanzaFile) throws IOException {
-		return preparePacket(getPacketXml(stanzaFile));
+		return getPacket(stanzaFile, 1);
 	}
 	
 	public String getPacketXml(String stanzaFile) throws FileNotFoundException, IOException {
@@ -134,9 +183,20 @@ public class XMPPAcceptanceTestHelper {
 	}
 
 	protected Packet sendPacket(Packet p) throws Exception {
+		return sendPacket(p, 1);
+	}
+	protected Packet sendPacket(Packet p, int userNumber) throws Exception {
+		
+		Connection connection;
+		if (1 == userNumber) {
+			connection = this.xmppConnection[0];
+		} else {
+			connection = this.xmppConnection[1];
+		}
+		
 		Packet reply = null;
 		try {
-			reply = SyncPacketSend.getReply(xmppConnection, p);
+			reply = SyncPacketSend.getReply(connection, p);
 			if (reply.getPacketID().toString()
 					.equals(p.getPacketID().toString())) {
 				return reply;

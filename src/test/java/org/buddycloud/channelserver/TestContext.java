@@ -152,6 +152,7 @@ public class TestContext {
 		Map<String, String> properties = new HashMap<String, String>();
 		
 		properties.put("$USER_JID", clientUser + "@" + serviceName + "/" + clientResource);
+		properties.put("$USER_JID_BARE", clientUser + "@" + serviceName);
 		properties.put("$USER_SERVICENAME", serviceName);
 		properties.put("$USER_RESOURCE", clientResource);
 		properties.put("$USER_NAME", clientUser);

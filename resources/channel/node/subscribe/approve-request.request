@@ -1,0 +1,8 @@
+<iq from='$USER_JID' 
+    to='$CHANNEL_SERVER' type='set' id='$ID' xmlns='jabber:client'>
+    <pubsub xmlns='http://jabber.org/protocol/pubsub#owner'>
+        <subscriptions node='$NODE'>
+            <subscription jid='$SUBSCRIBING_JID' subscription='subscribed'/>
+        </subscriptions>
+    </pubsub>
+</iq>

@@ -1,8 +1,8 @@
-<iq type='set'
+<iq type='get'
     from='$USER_JID'
     to='$CHANNEL_SERVER'
     id='$ID'>
   <pubsub xmlns='http://jabber.org/protocol/pubsub'>
-    <subscribe node='$NODE' jid='$USER_JID_BARE'/>
+    <items node='/user/does-not-exist@$CHANNEL_SERVER/posts' />
   </pubsub>
 </iq>

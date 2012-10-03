@@ -36,32 +36,48 @@ public class ChannelServerTestHelper extends XMPPAcceptanceTestHelper {
 		Properties configuration = new Properties();
 		configuration.load(new FileReader(PROPERTIES_FILE));
 		
-		TestContext tc = new TestContext();
 		
-		tc.setTo(configuration.getProperty("channelserver_to_test"));
-		tc.setTopicChannelServer(configuration.getProperty("topic_channel_server"));
-
-		tc.setClientUser(configuration.getProperty("testclient_user"));
-		tc.setClientPass(configuration.getProperty("testclient_pass"));
+		TestContext user1 = new TestContext();
+		TestContext user2 = new TestContext();
 		
-		tc.setClientResource(configuration.getProperty("testclient_resource"));
-		tc.setServerHostname(configuration.getProperty("testclient_xmpphost"));
-		tc.setServiceName(configuration.getProperty("testclient_xmppservice"));
-		tc.setServerPort(Integer.parseInt(configuration
+		user1.setTo(configuration.getProperty("channelserver_to_test"));
+		user1.setTopicChannelServer(configuration.getProperty("topic_channel_server"));
+		user1.setServerHostname(configuration.getProperty("testclient_xmpphost"));
+		user1.setServiceName(configuration.getProperty("testclient_xmppservice"));
+		user1.setServerPort(Integer.parseInt(configuration
 				.getProperty("testclient_xmppport")));
 		
+		user2.setTo(configuration.getProperty("channelserver_to_test"));
+		user2.setTopicChannelServer(configuration.getProperty("topic_channel_server"));
+		user2.setServerHostname(configuration.getProperty("testclient_xmpphost"));
+		user2.setServiceName(configuration.getProperty("testclient_xmppservice"));
+		user2.setServerPort(Integer.parseInt(configuration
+				.getProperty("testclient_xmppport")));
+		
+		user1.setClientUser(configuration.getProperty("user1.username"));
+		user1.setClientPass(configuration.getProperty("user1.password"));
+		user1.setClientResource(configuration.getProperty("user1.resource"));
+		
+		user2.setClientUser(configuration.getProperty("user2.username"));
+		user2.setClientPass(configuration.getProperty("user2.password"));
+		user2.setClientResource(configuration.getProperty("user2.resource"));
+				
 		long defaultPrefix = (long) (System.currentTimeMillis() / 1000L);
-		tc.setResourcePrefix(
+		user1.setResourcePrefix(
 		    configuration.getProperty("channel_prefix", String.valueOf(defaultPrefix))
 		);
 
-		setContext(tc);
+		setUsers(user1, user2);
+
 		initConnection();
 	}
-	
+
 	public String createNode() throws Exception {
+		return createNode(1);
+	}
+	public String createNode(int userNumber) throws Exception {
 		Packet packet = getPacket("resources/channel/node/create/success.request");
-		sendPacket(packet);
+		sendPacket(packet, userNumber);
 		return getValue(packet, "/iq/pubsub/create/@node");
 	}
 	
