@@ -81,7 +81,7 @@ public class SubscribeTest extends ChannelServerTestHelper {
 	@Test
 	public void testCanSubscribeToPrivateChannel() throws Exception {
 		
-		String affiliation = "publisher";
+		String affiliation = "member";
 		String node = createNode();
 		TestPacket makeNodePrivate = getPacket("resources/channel/node/configure/success.request");
 		makeNodePrivate.setVariable("$AFFILIATION", affiliation);

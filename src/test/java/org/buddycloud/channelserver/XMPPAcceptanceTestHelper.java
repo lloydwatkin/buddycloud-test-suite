@@ -56,7 +56,7 @@ public class XMPPAcceptanceTestHelper {
 	private TestContext user1;
 	private TestContext user2;
 	
-	protected XMPPConnection[] xmppConnection = new XMPPConnection[2];
+	protected static XMPPConnection[] xmppConnection = new XMPPConnection[2];
 
 	private final static Logger LOGGER = Logger
 			.getLogger("XMPPAcceptanceTestHelper");
@@ -74,6 +74,11 @@ public class XMPPAcceptanceTestHelper {
 
 	private void createConnection(final int i) throws Exception {
 		int arrayOffset = i - 1;
+		
+		// Don't connect and register for every test!
+		if (null != this.xmppConnection[arrayOffset]) {
+			return;
+		}
 		ConnectionConfiguration cc = new ConnectionConfiguration(
 				user1.getServerHostname(), user1.getServerPort());
 
@@ -113,7 +118,7 @@ public class XMPPAcceptanceTestHelper {
 		}, new PacketFilter() {
 			@Override
 			public boolean accept(Packet packet) {
-				return ((packet instanceof IQ) && (packet.getTo().contains(userJid)));
+				return ((packet instanceof IQ) && (null != packet.getTo()) && (true == packet.getTo().contains(userJid)));
 			}
 		});
 		Packet packet = getPacket("resources/register/register.request");

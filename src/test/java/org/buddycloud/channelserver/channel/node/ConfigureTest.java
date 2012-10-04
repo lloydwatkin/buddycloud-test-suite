@@ -27,7 +27,7 @@ public class ConfigureTest extends ChannelServerTestHelper {
 			throws Exception {
 
 		String node = createNode();
-		String affiliation = "moderator";
+		String affiliation = "member";
 		TestPacket packet = getPacket("resources/channel/node/configure/success.request");
 		packet.setVariable("$NODE", node);
 		packet.setVariable("$AFFILIATION", affiliation);
