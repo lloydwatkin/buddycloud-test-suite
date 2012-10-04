@@ -5,7 +5,8 @@
         <field var='FORM_TYPE' type='hidden'>
           <value>http://jabber.org/protocol/pubsub#node_config</value>
         </field>
-        <field var='buddycloud#default_affiliation'><value>moderator</value></field>
+        <field var='buddycloud#default_affiliation'><value>$AFFILIATION</value></field>
+        <field var='pubsub#access_model'><value>$ACCESS_MODEL</value></field>
       </x>
     </configure>
   </pubsub>

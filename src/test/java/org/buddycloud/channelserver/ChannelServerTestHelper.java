@@ -75,10 +75,20 @@ public class ChannelServerTestHelper extends XMPPAcceptanceTestHelper {
 	public String createNode() throws Exception {
 		return createNode(1);
 	}
+	
 	public String createNode(int userNumber) throws Exception {
-		Packet packet = getPacket("resources/channel/node/create/success.request");
+		Packet packet = getPacket("resources/channel/node/create/success.request", userNumber);
 		sendPacket(packet, userNumber);
 		return getValue(packet, "/iq/pubsub/create/@node");
 	}
 	
+	public void subscribeToNode(String node) throws Exception {
+		subscribeToNode(node, 1);
+	}
+	
+	public void subscribeToNode(String node, int userNumber) throws Exception {
+		TestPacket packet = getPacket("resources/channel/node/subscribe/success.request", userNumber);
+		packet.setVariable("$NODE", node);
+		sendPacket(packet, userNumber); 
+	}	
 }
