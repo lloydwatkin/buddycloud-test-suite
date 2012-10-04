@@ -77,10 +77,33 @@ public class SubscribeTest extends ChannelServerTestHelper {
 				getValue(reply, "/iq/pubsub/affiliation/@affiliation"));
 
 	}
-
+	
 	@Test
-	@Ignore("Require other functionality first")
-	public void testOutcastCanNotSubscribe() throws Exception {
+	public void testCanSubscribeToPrivateChannel() throws Exception {
+		
+		String affiliation = "publisher";
+		String node = createNode();
+		TestPacket makeNodePrivate = getPacket("resources/channel/node/configure/success.request");
+		makeNodePrivate.setVariable("$AFFILIATION", affiliation);
+		makeNodePrivate.setVariable("$ACCESS_MODEL", "authorize");
+		makeNodePrivate.setVariable("$NODE", node);
+		sendPacket(makeNodePrivate);
+		
+		TestPacket postItem = getPacket("resources/channel/node/item-post/create.request");
+		postItem.setVariable("$NODE", node);
+		Packet postItemReply = sendPacket(postItem);
+		String itemId = getValue(postItemReply, "/iq/pubsub/publish/item/@id");
+		
+		// Subscribe to the node 
+		TestPacket subscribeToNode = getPacket("resources/channel/node/subscribe/success.request", 2);
+		subscribeToNode.setVariable("$NODE",  node);
+		Packet reply = sendPacket(subscribeToNode, 2);
+		
+		Assert.assertEquals("result", getValue(reply, "/iq/@type"));
+		Assert.assertEquals("pending", getValue(reply, "/iq/pubsub/subscription/@subscription"));
+		Assert.assertEquals(node, getValue(reply, "/iq/pubsub/subscription/@node"));
+		
+		Assert.assertEquals(affiliation, getValue(reply, "/iq/pubsub/affiliation/@affiliation"));
 	}
 
 	@Test
@@ -100,5 +123,39 @@ public class SubscribeTest extends ChannelServerTestHelper {
 				"/iq[@type='error']/error[@type='WAIT']/policy-violation"));
 		Assert.assertTrue(exists(reply,
 				"/iq[@type='error']/error[@type='WAIT']/too-many-subscriptions"));
+	}
+
+	@Test
+	public void testOutcastCanNotSubscribe() throws Exception {
+		
+		// Create a new node
+		String node = createNode();
+		
+		// Subscribe to the node
+		TestPacket subscribeToNode = getPacket("resources/channel/node/subscribe/success.request", 2);
+		subscribeToNode.setVariable("$NODE",  node);
+		sendPacket(subscribeToNode, 2);
+		
+		// Make user an outcast
+		TestPacket makeOutcast = getPacket("resources/channel/node/affiliation/make-outcast.request");
+		makeOutcast.setVariable("$NODE",  node);
+		makeOutcast.setVariable("$SUBSCRIBING_JID", "\\$USER2_JID");
+		variableReplacement(makeOutcast, 1, null);
+        sendPacket(makeOutcast);
+        
+        // Unsubscribe user
+		TestPacket unsubscribeUser = getPacket("resources/channel/node/subscribe/deny-request.request");
+		unsubscribeUser.setVariable("$NODE",  node);
+		unsubscribeUser.setVariable("$SUBSCRIBING_JID", "\\$USER2_JID");
+		variableReplacement(unsubscribeUser, 1, null);
+        sendPacket(unsubscribeUser);
+        
+        // Attempt to subscribe again
+		TestPacket subscribeToNodeAgain = getPacket("resources/channel/node/subscribe/success.request", 2);
+		subscribeToNodeAgain.setVariable("$NODE",  node);
+		Packet reply = sendPacket(subscribeToNodeAgain, 2);
+		Assert.assertEquals("error", getValue(reply, "/iq/@type"));
+		Assert.assertTrue(exists(reply,
+				"/iq[@type='error']/error[@type='AUTH']/forbidden"));
 	}
 }

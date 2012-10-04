@@ -19,9 +19,11 @@ public class PostTest
 	private static final Logger LOGGER = Logger.getLogger(PostTest.class);
 	
     @Test
-    public void testCanPostToPostsNode() throws Exception
+    public void testCanPostToNode() throws Exception
     {
-    	Packet packet = getPacket("resources/channel/node/create-post.request");
+    	String node   = createNode();
+    	TestPacket packet = getPacket("resources/channel/node/item-post/create.request");
+    	packet.setVariable("$NODE", node);
 		Packet reply  = sendPacket(packet);
       
 		Assert.assertEquals(packet.getPacketID(), getValue(reply, "/iq/@id"));
@@ -32,11 +34,14 @@ public class PostTest
     @Test
     public void testCanPostAReply() throws Exception
     {
-    	Packet packet   = getPacket("resources/channel/node/create-post.request");
+    	String node   = createNode();
+    	TestPacket packet = getPacket("resources/channel/node/item-post/create.request");
+    	packet.setVariable("$NODE", node);
 		Packet response = sendPacket(packet);
 		String postId   = getValue(response, "/iq/pubsub/publish/item/@id");
 
-    	TestPacket followUp = getPacket("resources/channel/node/create-reply.request");
+    	TestPacket followUp = getPacket("resources/channel/node/item-post/reply.request");
+    	followUp.setVariable("$NODE", node);
         followUp.setVariable("$IN_REPLY_TO", postId);
 
     	Packet reply = sendPacket(followUp);
@@ -47,6 +52,51 @@ public class PostTest
     }
     
     @Test
-    @Ignore("Not written yet")
-    public void testPostingToNodeWhichDoesntExistReturnsErrorStanza() throws Exception { }
+    public void testNotProvidingNodeReturnsErrorStanza() throws Exception {
+
+    	TestPacket packet = getPacket("resources/channel/node/item-post/missing-node-id.request");
+		Packet reply = sendPacket(packet);
+		      
+		Assert.assertEquals("error", getValue(reply, "/iq/@type"));
+		Assert.assertTrue(exists(reply, "/iq/error[@type='MODIFY']/bad-request"));
+		Assert.assertTrue(exists(reply, "/iq/error[@type='MODIFY']/nodeid-required"));
+    }
+    
+    @Test
+    public void testPostingToNodeWhichDoesntExistReturnsErrorStanza() throws Exception {
+    	TestPacket packet = getPacket("resources/channel/node/item-post/not-existing-node.request");
+		Packet reply = sendPacket(packet);
+		      
+		Assert.assertEquals("error", getValue(reply, "/iq/@type"));
+		Assert.assertTrue(exists(reply, "/iq/error[@type='CANCEL']/item-not-found"));
+    }
+    
+    @Test
+    public void testPostingToUnsubscribedNodeReturnsError() throws Exception {
+    	String node   = createNode();
+    	
+    	TestPacket packet = getPacket("resources/channel/node/item-post/create.request");
+    	packet.setVariable("$NODE", node);
+		Packet reply = sendPacket(packet, 2);
+		
+		Assert.assertEquals("error", getValue(reply, "/iq/@type"));
+		Assert.assertTrue(exists(reply, "/iq/error[@type='AUTH']/forbidden"));
+    }
+    
+    @Test
+    public void testPostingToNodeWithMemberAffiliationReturnsError() throws Exception {
+		String node = createNode();
+		TestPacket makeNodePrivate = getPacket("resources/channel/node/configure/success.request");
+		makeNodePrivate.setVariable("$AFFILIATION", "member");
+		makeNodePrivate.setVariable("$ACCESS_MODEL", "open");
+		makeNodePrivate.setVariable("$NODE", node);
+		sendPacket(makeNodePrivate);
+    	
+    	TestPacket packet = getPacket("resources/channel/node/item-post/create.request");
+    	packet.setVariable("$NODE", node);
+		Packet reply = sendPacket(packet, 2);
+		
+		Assert.assertEquals("error", getValue(reply, "/iq/@type"));
+		Assert.assertTrue(exists(reply, "/iq/error[@type='AUTH']/forbidden"));
+    }
 }

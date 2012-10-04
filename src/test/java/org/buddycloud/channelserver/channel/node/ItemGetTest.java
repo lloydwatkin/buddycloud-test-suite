@@ -81,7 +81,9 @@ public class ItemGetTest extends ChannelServerTestHelper {
 	@Test
 	public void testAttemptToGetItemsFromPrivateUnsubscribedChannelFails() throws Exception {
 		String node = createNode();
-		TestPacket makeNodePrivate = getPacket("resources/channel/node/configure/success-private.request");
+		TestPacket makeNodePrivate = getPacket("resources/channel/node/configure/success.request");
+		makeNodePrivate.setVariable("$AFFILIATION", "member");
+		makeNodePrivate.setVariable("$ACCESS_MODEL", "authorize");
 		makeNodePrivate.setVariable("$NODE", node);
 		sendPacket(makeNodePrivate);
 		
@@ -99,9 +101,12 @@ public class ItemGetTest extends ChannelServerTestHelper {
 		
 		// Create a private node and post to it
 		String node = createNode();
-		TestPacket makeNodePrivate = getPacket("resources/channel/node/configure/success-private.request");
+		TestPacket makeNodePrivate = getPacket("resources/channel/node/configure/success.request");
+		makeNodePrivate.setVariable("$AFFILIATION", "member");
+		makeNodePrivate.setVariable("$ACCESS_MODEL", "authorize");
 		makeNodePrivate.setVariable("$NODE", node);
 		sendPacket(makeNodePrivate);
+		
 		TestPacket postItem = getPacket("resources/channel/node/item-post/create.request");
 		postItem.setVariable("$NODE", node);
 		Packet postItemReply = sendPacket(postItem);
