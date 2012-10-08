@@ -32,7 +32,7 @@ public class PacketReceivedQueue {
 		if (null == packets) {
 			packets = new HashMap<String, Packet>();
 		}
-		packets.put(packet.getPacketID(), packet);
+		packets.put(packet.getPacketID() + ":" + packet.getTo(), packet);
 	}
 
 	public static HashMap<String, Packet> getPackets() {
@@ -61,9 +61,7 @@ public class PacketReceivedQueue {
 	}
 
 	public static void clearPackets() {
-		for (Map.Entry<String, Packet> packet : packets.entrySet()) {
-			packets.remove(packet.getKey());
-		}
+		packets = new HashMap<String, Packet>();		
 	}
 
 	public static void removePacket(String id) {
