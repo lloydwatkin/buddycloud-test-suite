@@ -194,42 +194,4 @@ public class SubscribeTest extends ChannelServerTestHelper {
 		Assert.assertTrue(exists(subscriberPostItemReply,
 				"/iq[@type='error']/error[@type='AUTH']/forbidden"));
 	}
-	
-	@Test
-	public void testSuccesfulSubscriptionSendsExceptedNotifications()
-			throws Exception {
-		
-		String node = createNode();
-		
-		PacketReceivedQueue.clearPackets();
-		
-		TestPacket subscribe = getPacket("resources/channel/node/subscribe/success.request", 2);
-		subscribe.setVariable("$NODE", node);
-		Packet reply = sendPacket(subscribe, 2);
-		Assert.assertEquals("result", getValue(reply, "/iq/@type"));
-
-		HashMap<String, Packet> packets;
-		
-		// Try up to five times to get the packet required, with a pause if required;
-		for (int i = 0; i < 5; i++) {
-			packets = PacketReceivedQueue.getPackets();
-			
-			for (Packet packet : packets.values()) {
-
-				if (packet.getTo().contains((getUserJid(1)))) {
-					Assert.assertTrue(exists(packet, "/message"));
-					Assert.assertEquals("headline", getValue(packet, "/message/@type"));
-					Assert.assertEquals("subscribed", getValue(packet, "/message/event/subscription/@subscription"));
-					Assert.assertEquals(node, getValue(packet, "/message/event/subscription/@node"));
-					Assert.assertEquals(getUserJid(2), getValue(packet, "/message/event/subscription/@jid"));
-					Assert.assertEquals("publisher", getValue(packet, "/message/event/affiliation/@affiliation"));
-					Assert.assertEquals(node, getValue(packet, "/message/event/affiliation/@node"));
-					Assert.assertEquals(getUserJid(2), getValue(packet, "/message/event/affiliation/@jid"));
-					return;
-				}
-			}
-			Thread.sleep(40);
-		}
-		Assert.assertTrue("Did not receive notification message", false);
-	}
 }

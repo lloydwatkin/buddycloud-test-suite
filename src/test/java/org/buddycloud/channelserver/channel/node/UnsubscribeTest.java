@@ -72,48 +72,4 @@ public class UnsubscribeTest extends ChannelServerTestHelper {
 
 		Assert.assertEquals("result", getValue(reply, "/iq/@type"));
 	}
-	
-	@Test
-	public void testUnsubscribeSendsExceptedNotifications()
-			throws Exception {
-		
-		String node = createNode();
-		
-		TestPacket subscribe = getPacket("resources/channel/node/subscribe/success.request", 2);
-		subscribe.setVariable("$NODE", node);
-		Packet reply = sendPacket(subscribe, 2);
-		
-		Assert.assertEquals("result", getValue(reply, "/iq/@type"));
-		// Require a sleep to wait until all previous notifications are received
-		Thread.sleep(100);
-		PacketReceivedQueue.clearPackets();
-		
-		TestPacket unsubscribe = getPacket("resources/channel/node/unsubscribe/success.request", 2);
-		unsubscribe.setVariable("$NODE", node);
-		sendPacket(unsubscribe, 2);
-		
-		HashMap<String, Packet> packets;
-		
-		// Try up to ten times to get the packet required, with a pause if required;
-		for (int i = 0; i < 10; i++) {
-			packets = PacketReceivedQueue.getPackets();
-			
-			for (Packet packet : packets.values()) {
-
-				if (packet.getTo().contains((getUserJid(1)))) {
-					Assert.assertTrue(exists(packet, "/message"));
-					Assert.assertEquals("headline", getValue(packet, "/message/@type"));
-					Assert.assertEquals("none", getValue(packet, "/message/event/subscription/@subscription"));
-					Assert.assertEquals(node, getValue(packet, "/message/event/subscription/@node"));
-					Assert.assertEquals(getUserJid(2), getValue(packet, "/message/event/subscription/@jid"));
-					Assert.assertEquals("none", getValue(packet, "/message/event/affiliation/@affiliation"));
-					Assert.assertEquals(node, getValue(packet, "/message/event/affiliation/@node"));
-					Assert.assertEquals(getUserJid(2), getValue(packet, "/message/event/affiliation/@jid"));
-					return;
-				}
-			}
-			Thread.sleep(25);
-		}
-		Assert.assertTrue("Did not receive notification message", false);
-	}
 }
