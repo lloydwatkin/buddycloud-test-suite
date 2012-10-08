@@ -30,12 +30,17 @@ import org.jivesoftware.smackx.pubsub.packet.PubSubNamespace;
 public class EventElement implements EmbeddedPacketExtension
 {
 	private EventElementType type;
-	private PacketExtension ext;
+	private List<? extends PacketExtension> extensions;
 	
 	public EventElement(EventElementType eventType, PacketExtension eventExt)
 	{
 		type = eventType;
-		ext = eventExt;
+		extensions = Arrays.asList(eventExt);
+	}
+	
+	public EventElement(EventElementType eventType, List<? extends PacketExtension> packetExtensions) {
+		type = eventType;
+		extensions = packetExtensions;
 	}
 	
 	public EventElementType getEventType()
@@ -45,12 +50,7 @@ public class EventElement implements EmbeddedPacketExtension
 
 	public List<PacketExtension> getExtensions()
 	{
-		return Arrays.asList(new PacketExtension[]{getEvent()});
-	}
-
-	public PacketExtension getEvent()
-	{
-		return ext;
+		return (List<PacketExtension>) extensions;
 	}
 
 	public String getElementName()
@@ -66,8 +66,9 @@ public class EventElement implements EmbeddedPacketExtension
 	public String toXML()
 	{
 		StringBuilder builder = new StringBuilder("<event xmlns='" + PubSubNamespace.EVENT.getXmlns() + "'>");
-
-		builder.append(ext.toXML());
+        for (PacketExtension extension : extensions) {
+		    builder.append(extension.toXML());
+        }
 		builder.append("</event>");
 		return builder.toString();
 	}

@@ -18,21 +18,20 @@ import java.util.Map;
 
 import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smackx.provider.EmbeddedExtensionProvider;
-import org.jivesoftware.smackx.pubsub.EventElement;
-import org.jivesoftware.smackx.pubsub.EventElementType;
-import org.jivesoftware.smackx.pubsub.NodeExtension;
+import org.jivesoftware.smackx.pubsub.Affiliation;
 
 /**
- * Parses the event element out of the message stanza from 
- * the server as specified in the <a href="http://xmpp.org/extensions/xep-0060.html#schemas-event">event schema</a>.
+ * Parses the affiliation element out of the reply stanza from the server
+ * as specified in the <a href="http://xmpp.org/extensions/xep-0060.html#schemas-pubsub">affiliation schema</a>.
  * 
  * @author Robin Collier
  */
-public class EventProvider extends EmbeddedExtensionProvider
+public class AffiliationProvider extends EmbeddedExtensionProvider
 {
 	@Override
-	protected PacketExtension createReturnExtension(String currentElement, String currentNamespace, Map<String, String> attMap, List<? extends PacketExtension> content)
+	protected PacketExtension createReturnExtension(String currentElement, String currentNamespace, Map<String, String> attributeMap, List<? extends PacketExtension> content)
 	{
-	   	return new EventElement(EventElementType.valueOf(content.get(0).getElementName()), content);
+		return new Affiliation(attributeMap.get("node"), Affiliation.Type.valueOf(attributeMap.get("affiliation")), attributeMap.get("jid"));
 	}
+
 }

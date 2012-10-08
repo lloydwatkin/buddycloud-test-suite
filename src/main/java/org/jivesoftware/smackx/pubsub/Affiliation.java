@@ -30,6 +30,7 @@ public class Affiliation implements PacketExtension
 {
 	protected String node;
 	protected Type type;
+	protected String jid;
 	
 	public enum Type
 	{
@@ -44,8 +45,13 @@ public class Affiliation implements PacketExtension
 	 */
 	public Affiliation(String nodeId, Type affiliation)
 	{
-		node = nodeId;
+		this(nodeId, affiliation, null);
+	}
+		
+	public Affiliation(String node, Type affiliation, String jid) {
+		this.node = node;
 		type = affiliation;
+		this.jid = jid;
 	}
 	
 	public String getNodeId()
@@ -72,9 +78,15 @@ public class Affiliation implements PacketExtension
 	{
 		StringBuilder builder = new StringBuilder("<");
 		builder.append(getElementName());
-		appendAttribute(builder, "node", node);
-		appendAttribute(builder, "affiliation", type.toString());
-		
+		if (null != node) {
+		    appendAttribute(builder, "node", node);
+		}
+		if (null != type) {
+		    appendAttribute(builder, "affiliation", type.toString());
+		}
+		if (null != jid) {
+			appendAttribute(builder, "jid", jid.toString());
+		}
 		builder.append("/>");
 		return builder.toString();
 	}

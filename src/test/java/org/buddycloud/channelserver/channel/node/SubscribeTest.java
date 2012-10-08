@@ -1,9 +1,12 @@
 package org.buddycloud.channelserver.channel.node;
 
+import java.util.HashMap;
+
 import junit.framework.Assert;
 
 import org.apache.log4j.Logger;
 import org.buddycloud.channelserver.ChannelServerTestHelper;
+import org.buddycloud.channelserver.PacketReceivedQueue;
 import org.buddycloud.channelserver.TestPacket;
 import org.jivesoftware.smack.packet.Packet;
 import org.junit.Ignore;
@@ -135,7 +138,7 @@ public class SubscribeTest extends ChannelServerTestHelper {
 		TestPacket subscribeToNode = getPacket("resources/channel/node/subscribe/success.request", 2);
 		subscribeToNode.setVariable("$NODE",  node);
 		sendPacket(subscribeToNode, 2);
-		
+
 		// Make user an outcast
 		TestPacket makeOutcast = getPacket("resources/channel/node/affiliation/make-outcast.request");
 		makeOutcast.setVariable("$NODE",  node);
@@ -157,5 +160,77 @@ public class SubscribeTest extends ChannelServerTestHelper {
 		Assert.assertEquals("error", getValue(reply, "/iq/@type"));
 		Assert.assertTrue(exists(reply,
 				"/iq[@type='error']/error[@type='AUTH']/forbidden"));
+	}
+	
+	@Test
+	public void testDenyingSubscriptionRequestPreventsUserFromUsing() throws Exception {
+		
+		String affiliation = "member";
+		String node = createNode();
+		TestPacket makeNodePrivate = getPacket("resources/channel/node/configure/success.request");
+		makeNodePrivate.setVariable("$AFFILIATION", affiliation);
+		makeNodePrivate.setVariable("$ACCESS_MODEL", "authorize");
+		makeNodePrivate.setVariable("$NODE", node);
+		sendPacket(makeNodePrivate);
+		
+		// Subscribe to the node 
+		TestPacket subscribeToNode = getPacket("resources/channel/node/subscribe/success.request", 2);
+		subscribeToNode.setVariable("$NODE",  node);
+		Packet reply = sendPacket(subscribeToNode, 2);
+		
+	    // Deny subscription
+		TestPacket denySubscription = getPacket("resources/channel/node/subscribe/deny-request.request");
+		denySubscription.setVariable("$NODE",  node);
+		denySubscription.setVariable("$SUBSCRIBING_JID", "\\$USER2_JID");
+		variableReplacement(denySubscription, 1, null);
+		sendPacket(denySubscription);
+		
+		// Post to the node
+		TestPacket subscriberPostItem = getPacket("resources/channel/node/item-post/create.request", 2);
+		subscriberPostItem.setVariable("$NODE", node);
+		Packet subscriberPostItemReply = sendPacket(subscriberPostItem, 2);
+		
+		Assert.assertEquals("error", getValue(subscriberPostItemReply, "/iq/@type"));
+		Assert.assertTrue(exists(subscriberPostItemReply,
+				"/iq[@type='error']/error[@type='AUTH']/forbidden"));
+	}
+	
+	@Test
+	public void testSuccesfulSubscriptionSendsExceptedNotifications()
+			throws Exception {
+		
+		String node = createNode();
+		
+		PacketReceivedQueue.clearPackets();
+		
+		TestPacket subscribe = getPacket("resources/channel/node/subscribe/success.request", 2);
+		subscribe.setVariable("$NODE", node);
+		Packet reply = sendPacket(subscribe, 2);
+		Assert.assertEquals("result", getValue(reply, "/iq/@type"));
+
+		HashMap<String, Packet> packets;
+		
+		// Try up to five times to get the packet required, with a pause if required;
+		for (int i = 0; i < 5; i++) {
+			packets = PacketReceivedQueue.getPackets();
+			
+			for (Packet packet : packets.values()) {
+				
+				System.out.println("\n\n\nGot packet: " + packet.toXML() + " ::: user jid " + getUserJid(1));
+				if (packet.getTo().contains((getUserJid(1)))) {
+					Assert.assertTrue(exists(packet, "/message"));
+					Assert.assertEquals("headline", getValue(packet, "/message/@type"));
+					Assert.assertEquals("subscribed", getValue(packet, "/message/event/subscription/@subscription"));
+					Assert.assertEquals(node, getValue(packet, "/message/event/subscription/@node"));
+					Assert.assertEquals(getUserJid(2), getValue(packet, "/message/event/subscription/@jid"));
+					Assert.assertEquals("publisher", getValue(packet, "/message/event/affiliation/@affiliation"));
+					Assert.assertEquals(node, getValue(packet, "/message/event/affiliation/@node"));
+					Assert.assertEquals(getUserJid(2), getValue(packet, "/message/event/affiliation/@jid"));
+					return;
+				}
+			}
+			Thread.sleep(40);
+		}
+		Assert.assertTrue("Did not receive notification message", false);
 	}
 }
