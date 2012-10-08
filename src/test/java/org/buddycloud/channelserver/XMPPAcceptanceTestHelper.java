@@ -200,6 +200,7 @@ public class XMPPAcceptanceTestHelper {
 	protected Packet sendPacket(Packet p) throws Exception {
 		return sendPacket(p, 1);
 	}
+	
 	protected Packet sendPacket(Packet p, int userNumber, long timeout) throws Exception {
 		
 		Connection connection;
@@ -211,7 +212,7 @@ public class XMPPAcceptanceTestHelper {
 		
 		Packet reply = null;
 		try {
-			reply = SyncPacketSend.getReply(connection, p, timeout);
+			reply = SyncPacketSend.getReply(connection, p, timeout, false);
 			if (reply.getPacketID().toString()
 					.equals(p.getPacketID().toString())) {
 				return reply;
