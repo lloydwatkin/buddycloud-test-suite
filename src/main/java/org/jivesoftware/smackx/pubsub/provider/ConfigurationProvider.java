@@ -19,7 +19,6 @@ import java.util.Map;
 import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smackx.provider.EmbeddedExtensionProvider;
 import org.jivesoftware.smackx.pubsub.Configuration;
-import org.jivesoftware.smackx.pubsub.Configure;
 
 /**
  * Parses the Configure element out of the reply stanza from the server

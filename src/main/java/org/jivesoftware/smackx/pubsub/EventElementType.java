@@ -40,5 +40,8 @@ public enum EventElementType
 	subscription,
 	
 	/** affiliation */
-	affiliation
+	affiliation,
+	
+	/** data form */
+	x
 }

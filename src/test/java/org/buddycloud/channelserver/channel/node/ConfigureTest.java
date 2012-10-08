@@ -30,7 +30,7 @@ public class ConfigureTest extends ChannelServerTestHelper {
 			throws Exception {
 
 		String node = createNode();
-		String affiliation = "member";
+		String affiliation = "publisher";
 		TestPacket packet = getPacket("resources/channel/node/configure/success.request");
 		packet.setVariable("$NODE", node);
 		packet.setVariable("$AFFILIATION", affiliation);
@@ -45,7 +45,7 @@ public class ConfigureTest extends ChannelServerTestHelper {
 
 		Assert.assertEquals("result", getValue(reply, "/iq/@type"));
 		Assert.assertEquals(
-				"romeo@ip-10-66-2-93",
+				getUserJid(1),
 				getValue(
 						configuration,
 						"/iq/query[@node='"
@@ -109,7 +109,7 @@ public class ConfigureTest extends ChannelServerTestHelper {
 		
 		String node = createNode();
 		TestPacket makeNodePrivate = getPacket("resources/channel/node/configure/success.request");
-		makeNodePrivate.setVariable("$AFFILIATION", "member");
+		makeNodePrivate.setVariable("$AFFILIATION", "publisher");
 		makeNodePrivate.setVariable("$ACCESS_MODEL", "authorize");
 		makeNodePrivate.setVariable("$NODE", node);
 		sendPacket(makeNodePrivate);
