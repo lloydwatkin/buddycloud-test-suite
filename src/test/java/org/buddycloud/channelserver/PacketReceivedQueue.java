@@ -61,7 +61,7 @@ public class PacketReceivedQueue {
 	}
 
 	public static void clearPackets() {
-		packets = new HashMap<String, Packet>();		
+		packets.clear();
 	}
 
 	public static void removePacket(String id) {
