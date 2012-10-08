@@ -73,6 +73,11 @@
 <className>org.jivesoftware.smackx.pubsub.provider.FormNodeProvider</className>
 </extensionProvider>
 <extensionProvider>
+    <elementName>configuration</elementName>
+    <namespace></namespace>
+    <className>org.jivesoftware.smackx.pubsub.provider.ConfigurationProvider</className>
+</extensionProvider>
+<extensionProvider>
 <elementName>default</elementName>
 <namespace>http://jabber.org/protocol/pubsub#owner</namespace>
 <className>org.jivesoftware.smackx.pubsub.provider.FormNodeProvider</className>
@@ -84,9 +89,9 @@
 <className>org.jivesoftware.smackx.pubsub.provider.EventProvider</className>
 </extensionProvider>
 <extensionProvider>
-<elementName>configuration</elementName>
-<namespace>http://jabber.org/protocol/pubsub#event</namespace>
-<className>org.jivesoftware.smackx.pubsub.provider.ConfigEventProvider</className>
+    <elementName>configuration</elementName>
+    <namespace>http://jabber.org/protocol/pubsub#event</namespace>
+    <className>org.jivesoftware.smackx.pubsub.provider.ConfigEventProvider</className>
 </extensionProvider>
 <extensionProvider>
 <elementName>delete</elementName>
