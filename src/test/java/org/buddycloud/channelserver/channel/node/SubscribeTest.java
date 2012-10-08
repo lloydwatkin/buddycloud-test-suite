@@ -215,8 +215,7 @@ public class SubscribeTest extends ChannelServerTestHelper {
 			packets = PacketReceivedQueue.getPackets();
 			
 			for (Packet packet : packets.values()) {
-				
-				System.out.println("\n\n\nGot packet: " + packet.toXML() + " ::: user jid " + getUserJid(1));
+
 				if (packet.getTo().contains((getUserJid(1)))) {
 					Assert.assertTrue(exists(packet, "/message"));
 					Assert.assertEquals("headline", getValue(packet, "/message/@type"));
