@@ -128,4 +128,14 @@
     <namespace>http://jabber.org/protocol/pubsub#event</namespace>
     <className>org.jivesoftware.smackx.provider.DataFormProvider</className>
 </extensionProvider>
+<extensionProvider>
+    <elementName>configuration</elementName>
+    <namespace>http://jabber.org/protocol/pubsub#event</namespace>
+    <className>org.jivesoftware.smackx.provider.ConfigurationProvider</className>
+</extensionProvider>
+<extensionProvider>
+    <elementName>x</elementName>
+    <namespace></namespace>
+    <className>org.jivesoftware.smackx.provider.DataFormProvider</className>
+</extensionProvider>
 </smackProviders>

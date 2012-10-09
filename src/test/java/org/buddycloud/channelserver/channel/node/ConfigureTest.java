@@ -1,5 +1,6 @@
 package org.buddycloud.channelserver.channel.node;
 
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 
 import junit.framework.Assert;
@@ -36,7 +37,7 @@ public class ConfigureTest extends ChannelServerTestHelper {
 		packet.setVariable("$AFFILIATION", affiliation);
 		packet.setVariable("$ACCESS_MODEL", "open");
 		Packet reply = sendPacket(packet);
-		
+
 		Assert.assertEquals("result", getValue(reply, "/iq/@type"));
 
 		TestPacket checkRequest = getPacket("resources/channel/node/configure/retrieve.request");
@@ -59,7 +60,7 @@ public class ConfigureTest extends ChannelServerTestHelper {
 								+ node
 								+ "']/x[@type='result']/field[@var='buddycloud#default_affiliation']/value/text()"));
 	}
-	
+
 	@Test
 	public void testNotProvidingValidStanzaResultsInErrorResponse()
 			throws Exception {
@@ -67,22 +68,25 @@ public class ConfigureTest extends ChannelServerTestHelper {
 		TestPacket packet = getPacket("resources/channel/node/configure/invalid.request");
 		packet.setVariable("$NODE", node);
 		Packet reply = sendPacket(packet);
-		
+
 		Assert.assertEquals("error", getValue(reply, "/iq/@type"));
 		Assert.assertTrue(exists(reply, "/iq/error[@type='MODIFY']/bad-request"));
 	}
-	
+
 	@Test
 	public void testUserMustBeOwnerToModifyConfiguration() throws Exception {
 		String node = createNode();
-		
-		TestPacket subscribe = getPacket("resources/channel/node/subscribe/success.request", 2);
-		subscribe.setVariable("$NODE",  node);
+
+		TestPacket subscribe = getPacket(
+				"resources/channel/node/subscribe/success.request", 2);
+		subscribe.setVariable("$NODE", node);
 		Packet subscribed = sendPacket(subscribe, 2);
-		
-		Assert.assertEquals("subscribed", getValue(subscribed, "/iq/pubsub/subscription/@subscription"));
-		
-		TestPacket packet = getPacket("resources/channel/node/configure/success.request", 2);
+
+		Assert.assertEquals("subscribed",
+				getValue(subscribed, "/iq/pubsub/subscription/@subscription"));
+
+		TestPacket packet = getPacket(
+				"resources/channel/node/configure/success.request", 2);
 		packet.setVariable("$NODE", node);
 		packet.setVariable("$AFFILIATION", "member");
 		packet.setVariable("$ACCESS_MODEL", "open");
@@ -91,7 +95,7 @@ public class ConfigureTest extends ChannelServerTestHelper {
 		Assert.assertEquals("error", getValue(reply, "/iq/@type"));
 		Assert.assertTrue(exists(reply, "/iq/error[@type='AUTH']/forbidden"));
 	}
-	
+
 	@Test
 	public void testNotExistingNodeReturnsErrorStanza() throws Exception {
 
@@ -99,41 +103,90 @@ public class ConfigureTest extends ChannelServerTestHelper {
 		Packet reply = sendPacket(packet);
 
 		Assert.assertEquals("error", getValue(reply, "/iq/@type"));
-		Assert.assertTrue(exists(reply, "/iq/error[@type='CANCEL']/item-not-found"));
+		Assert.assertTrue(exists(reply,
+				"/iq/error[@type='CANCEL']/item-not-found"));
 	}
-	
-	
+
 	@Test
-	public void testSuccessfulConfigurtionSendsEventNotification() throws Exception
-	{
-		
+	public void testSuccessfulConfigurtionSendsEventNotification()
+			throws Exception {
+
+		PacketReceivedQueue.clearPackets();
 		String node = createNode();
 		TestPacket makeNodePrivate = getPacket("resources/channel/node/configure/success.request");
 		makeNodePrivate.setVariable("$AFFILIATION", "publisher");
 		makeNodePrivate.setVariable("$ACCESS_MODEL", "authorize");
 		makeNodePrivate.setVariable("$NODE", node);
 		sendPacket(makeNodePrivate);
-		
-		PacketReceivedQueue.clearPackets();
-		
-		TestPacket subscribe = getPacket("resources/channel/node/subscribe/success.request", 2);
-		subscribe.setVariable("$NODE", node);
-		Packet reply = sendPacket(subscribe, 2);
-		Assert.assertEquals("result", getValue(reply, "/iq/@type"));
 
 		HashMap<String, Packet> packets;
-		
-		// Try up to five times to get the packet required, with a pause if required;
+
+		// Try up to five times to get the packet required, with a pause if
+		// required;
 		for (int i = 0; i < 5; i++) {
 			packets = PacketReceivedQueue.getPackets();
-			
+
 			for (Packet packet : packets.values()) {
-				if (packet.getTo().contains((getUserJid(1)))) {
+				if (packet.getTo().contains(getUserJid(1)) && (true == exists(packet, "/message"))) {
 					Assert.assertTrue(exists(packet, "/message"));
-					Assert.assertEquals("headline", getValue(packet, "/message/@type"));
-					Assert.assertEquals(node, getValue(packet, "/message/event/configuration/@node"));
+					Assert.assertEquals("headline",
+							getValue(packet, "/message/@type"));
+					Assert.assertEquals(
+							node,
+							getValue(packet,
+									"/message/event/configuration/@node"));
 					return;
 				}
+			}
+			Thread.sleep(40);
+		}
+		Assert.assertTrue("Did not receive notification message", false);
+	}
+
+	@Test
+	public void testSuccessfulConfigurtionSendsEventNotificationWithExpectedPayload()
+			throws Exception {
+		String accessModel = "authorize";
+		String affiliation = "publisher";
+
+		PacketReceivedQueue.clearPackets();
+		
+		String node = createNode();
+		TestPacket makeNodePrivate = getPacket("resources/channel/node/configure/success.request");
+		makeNodePrivate.setVariable("$AFFILIATION", affiliation);
+		makeNodePrivate.setVariable("$ACCESS_MODEL", accessModel);
+		makeNodePrivate.setVariable("$NODE", node);
+		sendPacket(makeNodePrivate);
+
+		HashMap<String, Packet> packets;
+		// Try up to five times to get the packet required, with a pause if
+		// required;
+		for (int i = 0; i < 5; i++) {
+			try {
+				packets = PacketReceivedQueue.getPackets();
+	
+				for (Packet packet : packets.values()) {
+					if (packet.getTo().contains((getUserJid(1)))
+							&& (true == exists(packet,
+									"/message/event/configuration/x"))) {
+						Assert.assertEquals(
+								affiliation,
+								getValue(
+										packet,
+										"/message/event/configuration/x/field[@var='buddycloud#default_affiliation']/value/text()"));
+						Assert.assertEquals(
+								accessModel,
+								getValue(packet,
+										"/message/event/configuration/x/field[@var='pubsub#access_model']/value/text()"));
+						Assert.assertEquals(
+								getUserJid(1),
+								getValue(packet,
+										"/message/event/configuration/x/field[@var='pubsub#owner']/value/text()"));
+						return;
+					}
+				}
+			} catch (ConcurrentModificationException e) {
+				// Ignore it
 			}
 			Thread.sleep(40);
 		}

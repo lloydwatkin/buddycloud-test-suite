@@ -1,6 +1,6 @@
 <iq from="$USER_JID" to="$CHANNEL_SERVER" type="set" id="$ID" xmlns="jabber:client">
     <pubsub xmlns="http://jabber.org/protocol/pubsub">
-        <publish node='this-does-not-exist'>
+        <publish node='/user/this-does-not-exist@$USER_SERVICENAME/posts'>
             <item>
                 <entry xmlns="http://www.w3.org/2005/Atom" xmlns:thr="http://purl.org/syndication/thread/1.0">
                     <content>this is a message</content>

@@ -31,7 +31,7 @@ public class ConfigurationProvider extends EmbeddedExtensionProvider
 	@Override
 	protected PacketExtension createReturnExtension(String currentElement, String currentNamespace, Map<String, String> attributeMap, List<? extends PacketExtension> content)
 	{
-		return new Configuration(attributeMap.get("node"));
+		return new Configuration(attributeMap.get("node"), content);
 	}
 
 }

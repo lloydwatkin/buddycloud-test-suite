@@ -79,24 +79,6 @@ public class ItemGetTest extends ChannelServerTestHelper {
 	}
 	
 	@Test
-	public void testAttemptToGetItemsFromPrivateUnsubscribedChannelFails() throws Exception {
-		String node = createNode();
-		TestPacket makeNodePrivate = getPacket("resources/channel/node/configure/success.request");
-		makeNodePrivate.setVariable("$AFFILIATION", "follower");
-		makeNodePrivate.setVariable("$ACCESS_MODEL", "authorize");
-		makeNodePrivate.setVariable("$NODE", node);
-		sendPacket(makeNodePrivate);
-		
-		TestPacket packet = getPacket("resources/channel/node/item-retrieval/success.request");
-		packet.setVariable("$NODE", node);
-		Packet reply = sendPacket(packet, 2);
-		
-		Assert.assertEquals("error", getValue(reply, "/iq/@type"));
-		Assert.assertTrue(exists(reply, "/iq/error[@type='AUTH']/forbidden"));
-		Assert.assertTrue(exists(reply, "/iq/error[@type='AUTH']/closed-node"));
-	}
-	
-	@Test
 	public void testCanGetItemsFromSubscribedPrivateChannel() throws Exception {
 		
 		// Create a private node and post to it
@@ -130,5 +112,23 @@ public class ItemGetTest extends ChannelServerTestHelper {
 		
 		Assert.assertEquals("result", getValue(reply, "/iq/@type"));
 		Assert.assertEquals(itemId, getValue(reply, "/iq/pubsub/items/item/@id"));
+	}
+	
+	@Test
+	public void testAttemptToGetItemsFromPrivateUnsubscribedChannelFails() throws Exception {
+		String node = createNode();
+		TestPacket makeNodePrivate = getPacket("resources/channel/node/configure/success.request");
+		makeNodePrivate.setVariable("$AFFILIATION", "member");
+		makeNodePrivate.setVariable("$ACCESS_MODEL", "authorize");
+		makeNodePrivate.setVariable("$NODE", node);
+		sendPacket(makeNodePrivate);
+		
+		TestPacket packet = getPacket("resources/channel/node/item-retrieval/success.request");
+		packet.setVariable("$NODE", node);
+		Packet reply = sendPacket(packet, 2);
+		
+		Assert.assertEquals("error", getValue(reply, "/iq/@type"));
+		Assert.assertTrue(exists(reply, "/iq/error[@type='AUTH']/forbidden"));
+		Assert.assertTrue(exists(reply, "/iq/error[@type='AUTH']/closed-node"));
 	}
 }

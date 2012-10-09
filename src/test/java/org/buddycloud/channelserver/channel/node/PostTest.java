@@ -63,15 +63,6 @@ public class PostTest
     }
     
     @Test
-    public void testPostingToNodeWhichDoesntExistReturnsErrorStanza() throws Exception {
-    	TestPacket packet = getPacket("resources/channel/node/item-post/not-existing-node.request");
-		Packet reply = sendPacket(packet);
-		      
-		Assert.assertEquals("error", getValue(reply, "/iq/@type"));
-		Assert.assertTrue(exists(reply, "/iq/error[@type='CANCEL']/item-not-found"));
-    }
-    
-    @Test
     public void testPostingToUnsubscribedNodeReturnsError() throws Exception {
     	String node   = createNode();
     	
@@ -98,5 +89,14 @@ public class PostTest
 		
 		Assert.assertEquals("error", getValue(reply, "/iq/@type"));
 		Assert.assertTrue(exists(reply, "/iq/error[@type='AUTH']/forbidden"));
+    }
+    
+    @Test
+    public void testPostingToNodeWhichDoesntExistReturnsErrorStanza() throws Exception {
+    	TestPacket packet = getPacket("resources/channel/node/item-post/not-existing-node.request");
+		Packet reply = sendPacket(packet);
+		      
+		Assert.assertEquals("error", getValue(reply, "/iq/@type"));
+		Assert.assertTrue(exists(reply, "/iq/error[@type='CANCEL']/item-not-found"));
     }
 }

@@ -13,6 +13,8 @@
  */
 package org.jivesoftware.smackx.pubsub;
 
+import java.util.List;
+
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.packet.PacketExtension;
 
@@ -24,14 +26,16 @@ import org.jivesoftware.smack.packet.PacketExtension;
 public class Configuration implements PacketExtension
 {
 	protected String node;
+	protected List<? extends PacketExtension> extensions;
 	
 	/**
 	 * Constructs a configuration.
 	 * 
 	 * @param node The node that was configured
 	 */
-	public Configuration(String node) {
+	public Configuration(String node, List<? extends PacketExtension> content) {
 		this.node = node;
+		this.extensions = content;
 	}
 		
 	public String getElementName()
@@ -49,7 +53,15 @@ public class Configuration implements PacketExtension
 		StringBuilder builder = new StringBuilder("<");
 		builder.append(getElementName());
 		appendAttribute(builder, "node", node);
-		builder.append("/>");
+		if (null == extensions) {
+		    builder.append("/>");
+		} else {
+			builder.append(">");
+			for (PacketExtension extension : extensions) {
+				builder.append(extension.toXML());
+			}
+			builder.append("</" + getElementName() + ">");
+		}
 		return builder.toString();
 	}
 

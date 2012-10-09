@@ -1,5 +1,6 @@
 package org.buddycloud.channelserver.channel.node;
 
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 
 import junit.framework.Assert;
@@ -141,7 +142,7 @@ public class SubscriptionEventTest extends ChannelServerTestHelper {
 
 		String node = createNode();
 		TestPacket makeNodePrivate = getPacket("resources/channel/node/configure/success.request");
-		makeNodePrivate.setVariable("$AFFILIATION", "follower");
+		makeNodePrivate.setVariable("$AFFILIATION", "member");
 		makeNodePrivate.setVariable("$ACCESS_MODEL", "authorize");
 		makeNodePrivate.setVariable("$NODE", node);
 		sendPacket(makeNodePrivate);
@@ -159,39 +160,22 @@ public class SubscriptionEventTest extends ChannelServerTestHelper {
 		// Try up to five times to get the packet required, with a pause if
 		// required;
 		for (int i = 0; i < 5; i++) {
-			packets = PacketReceivedQueue.getPackets();
-
-			for (Packet packet : packets.values()) {
-				if (true == exists(packet, "/message/x")) {
-
-					/**
-					 * <message id="fv76f-17-1" to="romeo@ip-10-66-2-93"
-					 * from="channels.ip-10-66-2-93" type="headline"><x
-					 * xmlns="jabber:x:data" type="form"><title>Confirm channel
-					 * subscription</title><instructions>Allow
-					 * channels.ip-10-66-2-93 to subscribe to node
-					 * /user/romeo@ip-
-					 * 10-66-2-93/1349709571?</instructions><field
-					 * var="FORM_TYPE"
-					 * type="hidden"><value>http://jabber.org/protocol
-					 * /pubsub#subscribe_authorization</value></field><field
-					 * label="Node" var="pubsub#node"
-					 * type="text-single"><value>/
-					 * user/romeo@ip-10-66-2-93/1349709571</value></field><field
-					 * label="Subscriber Address" var="pubsub#subscriber_jid"
-					 * type
-					 * ="jid-single"><value>romeo@ip-10-66-2-93</value></field
-					 * ><field label="Allow?" var="pubsub#allow"
-					 * type="boolean"><value>false</value></field></x></message>
-					 */
-					Assert.assertTrue(exists(packet, "/message"));
-					Assert.assertEquals("headline",
-							getValue(packet, "/message/@type"));
-					Assert.assertEquals("Confirm channel subscription", getValue(packet, "/message/x/title/text()"));
-					Assert.assertEquals(node, getValue(packet, "/message/x/field[@var='pubsub#node']/value/text()"));
-					Assert.assertEquals(getUserJid(2), getValue(packet, "/message/x/field[@var='pubsub#subscriber_jid']/value/text()"));
-					return;
+			try {
+				packets = PacketReceivedQueue.getPackets();
+	
+				for (Packet packet : packets.values()) {
+					if (true == exists(packet, "/message/x")) {
+						Assert.assertTrue(exists(packet, "/message"));
+						Assert.assertEquals("headline",
+								getValue(packet, "/message/@type"));
+						Assert.assertEquals("Confirm channel subscription", getValue(packet, "/message/x/title/text()"));
+						Assert.assertEquals(node, getValue(packet, "/message/x/field[@var='pubsub#node']/value/text()"));
+						Assert.assertEquals(getUserJid(2), getValue(packet, "/message/x/field[@var='pubsub#subscriber_jid']/value/text()"));
+						return;
+					}
 				}
+			} catch (ConcurrentModificationException e) {
+				// Ignore this!
 			}
 			Thread.sleep(40);
 		}
