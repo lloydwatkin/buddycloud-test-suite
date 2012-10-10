@@ -18,30 +18,28 @@ package org.buddycloud.channelserver;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.jivesoftware.smack.SmackConfiguration;
+
 import javax.management.RuntimeErrorException;
-
-import org.apache.log4j.Logger;
-
-import org.buddycloud.channelserver.PacketReceivedQueue;
-import org.buddycloud.channelserver.TestContext;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.io.IOUtils;
-import org.jaxen.JaxenException;
+import org.apache.log4j.Logger;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.JDOMException;
 import org.jdom2.Text;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.input.sax.XMLReaders;
 import org.jdom2.xpath.XPathFactory;
 import org.jivesoftware.smack.Connection;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.PacketListener;
+import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
@@ -112,7 +110,7 @@ public class XMPPAcceptanceTestHelper {
 		xmppConnection[arrayOffset].addPacketSendingListener(new PacketListener() {
 			@Override
 			public void processPacket(Packet packet) {
-				if (packet.getTo().contains(userJid)) {
+				if (packet.getFrom().contains(userJid)) {
 					LOGGER.debug("    --- Sending packet for user" + i + " ---");
 					LOGGER.debug(packet.toXML());
 				}
@@ -233,13 +231,12 @@ public class XMPPAcceptanceTestHelper {
 		p.setPacketID(Packet.nextID());
 		return sendPacket(p);
 	}
-	
-	protected String getValue(Packet p, String xPath) throws Exception {
-		return getValue(p, xPath, false);
-	}
 		
-    protected String getValue(Packet p, String xPath, boolean namespaceFeature) throws Exception {
+    protected String getValue(Packet p, String xPath) throws Exception {
+    	return getValue(p, xPath, false);
+    }
     	
+    protected String getValue(Packet p, String xPath, boolean namespaceFeature) throws Exception {
 		Object evaluateFirst = getEl(p, xPath, namespaceFeature);
 		if (evaluateFirst instanceof Attribute) {
 			Attribute attribute = (Attribute) evaluateFirst;
@@ -258,7 +255,11 @@ public class XMPPAcceptanceTestHelper {
 	}
 
 	protected boolean exists(Packet p, String xPath) throws Exception {
-		return getEl(p, xPath) != null;
+		return exists(p, xPath, false);
+	}
+	
+	protected boolean exists(Packet p, String xPath, boolean namespaceFeature) throws Exception {
+		return getEl(p, xPath, namespaceFeature) != null;
 	}
 
 	private Object getEl(Packet p, String xPath) throws Exception {
@@ -266,11 +267,14 @@ public class XMPPAcceptanceTestHelper {
 	}
 	
 	private Object getEl(Packet p, String xPath, boolean namespaceFeature) throws Exception {
+		
+		InputStream xmlStream = IOUtils.toInputStream(p.toXML());
 		SAXBuilder saxBuilder = new SAXBuilder();
-		saxBuilder.setFeature("http://xml.org/sax/features/namespaces", namespaceFeature);
-		Document replyDoc = saxBuilder.build(IOUtils.toInputStream(p.toXML()));
-		Object evaluateFirst = XPathFactory.instance().compile(xPath)
+	    saxBuilder.setFeature("http://xml.org/sax/features/namespaces", namespaceFeature);
+	    saxBuilder.setFeature("http://xml.org/sax/features/validation",  false);
+	    saxBuilder.setFeature("http://xml.org/sax/features/namespace-prefixes", false);
+	    Document replyDoc = (Document) saxBuilder.build(xmlStream);
+		return XPathFactory.instance().compile(xPath)
 				.evaluateFirst(replyDoc);
-		return evaluateFirst;
 	}
 }
