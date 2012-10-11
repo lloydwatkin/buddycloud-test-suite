@@ -1,0 +1,10 @@
+<iq type='set'
+    from='$USER_JID'
+    to='$CHANNEL_SERVER'
+    id='$ID'>
+    <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+        <retract node='/user/this-does-not-exist@$USER_SERVICENAME/posts'>
+            <item id='$ITEM_ID' notify='true' />
+        </retract>
+    </pubsub>
+</iq>
